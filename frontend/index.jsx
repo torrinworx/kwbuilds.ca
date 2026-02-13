@@ -3,19 +3,15 @@ import {
 	Icons,
 	Stage,
 	StageContext,
-	is_node,
-	InputContext,
 	suspend,
 	PopupContext,
-	OObject,
 	mount,
 	Head,
 	Title,
 	Style,
-
+	Meta,
 } from 'destamatic-ui';
 import IconifyIcons from "destamatic-ui/components/icons/IconifyIcons/IconifyIcons";
-
 import { syncState } from 'destam-web-core/client';
 
 import fonts from './utils/fonts.js';
@@ -24,15 +20,12 @@ import AppContext from './utils/appContext.js';
 
 import Stasis from './components/Stasis.jsx';
 
+import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 let appContext;
-if (!is_node()) {
-	appContext = await syncState();
-	appContext.theme = theme;
-}
-
-else appContext = OObject({});
+appContext = await syncState();
+appContext.theme = theme;
 
 themeSetup(appContext);
 
@@ -63,13 +56,13 @@ const authorize = (Comp) =>
 
 const stage = {
 	acts: {
+		landing: Landing,
 		fallback: NotFound,
 	},
 	onOpen: () => {
 		window.scrollTo(0, 0);
 	},
 	template: ({ children }) => children,
-	ssg: true,
 	initial: 'landing',
 	urlRouting: true,
 	fallback: 'fallback',
@@ -109,7 +102,6 @@ const HeadTags = () => {
             `}
 		</Style>
 
-
 		{/* <Script
 			group="plausible-js"
 			async
@@ -136,46 +128,43 @@ const HeadTags = () => {
 
 const App = () => <AppContext value={appContext}>
 	<Theme value={theme}>
-		<InputContext value={inputs} >
-			<Icons value={[IconifyIcons, {
-				'chevron-down': IconifyIcons('feather:chevron-down'),
-			}]} >
-				<Head>
-					<HeadTags />
-					<StageContext value={stage}>
-						<PopupContext>
+		<Icons value={[IconifyIcons, {
+			'chevron-down': IconifyIcons('feather:chevron-down'),
+		}]} >
+			<Head>
+				<HeadTags />
+				<StageContext value={stage}>
+					<PopupContext>
+						<div
+							theme="primary"
+							style={{
+								background: '$color_background',
+								minHeight: '100dvh',
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+						>
 							<div
-								theme="primary"
+								theme="column_fill_center"
 								style={{
-									background: '$color_background',
-									minHeight: '100dvh',
+									gap: 20,
 									display: 'flex',
 									flexDirection: 'column',
+									flex: 1,
 								}}
 							>
-								<div
-									theme="column_fill_center"
-									style={{
-										gap: 20,
-										display: 'flex',
-										flexDirection: 'column',
-										flex: 1,
-									}}
-								>
-									<Header />
-									<Stage />
-									<div style={{ marginTop: 'auto' }}>
-										<Footer />
-									</div>
-								</div>
+								{/* <Header /> */}
+								<Stage />
+								{/* <div style={{ marginTop: 'auto' }}>
+									<Footer />
+								</div> */}
 							</div>
-						</PopupContext>
-					</StageContext>
-				</Head>
-			</Icons>
-		</InputContext>
+						</div>
+					</PopupContext>
+				</StageContext>
+			</Head>
+		</Icons>
 	</Theme>
 </AppContext>;
-
 
 mount(document.body, <App />);

@@ -1,0 +1,56 @@
+{
+	"name": "kwbuilds.ca",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./backend/index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node ./backend/index.js",
+		"dev": "nodemon --watch ./destam-web-core/server --watch ./backend --exec node ./backend/index.js",
+		"build": "bash build.sh",
+		"test": "node --test && npm --prefix destamatic-ui run test",
+		"prod": "bash build.sh && bash ./build/run.sh"
+	},
+	"engines": {
+		"npm": ">=10.9.2",
+		"node": ">=23.9.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/torrinworx/kwbuilds.ca.git"
+	},
+	"author": "Torrin Z. Leonard <torrin@worx4you.com> (https://torrin.me/)",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/torrinworx/kwbuilds.ca/issues"
+	},
+	"homepage": "https://github.com/torrinworx/kwbuilds.ca#readme",
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.971.0",
+		"bcryptjs": "^2.4.3",
+		"cookie-parser": "^1.4.7",
+		"destam": "^0.8.0",
+		"destam-db": "file:destam-web-core/db",
+		"destam-dom": "^0.14.4",
+		"destam-web-core": "file:destam-web-core",
+		"express": "^5.2.1",
+		"multer": "^2.0.2",
+		"ws": "^8.18.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.25.2",
+		"@babel/generator": "^7.25.6",
+		"@babel/parser": "^7.25.6",
+		"@babel/plugin-syntax-jsx": "^7.24.7",
+		"@iconify-json/feather": "^1.2.1",
+		"@iconify-json/lineicons": "^1.2.6",
+		"@iconify-json/simple-icons": "^1.2.1",
+		"@iconify-json/svg-spinners": "^1.2.4",
+		"@iconify-json/tabler": "^1.2.22",
+		"@plausible-analytics/tracker": "^0.4.4",
+		"destamatic-ui": "file:destamatic-ui",
+		"esbuild": "^0.24.0",
+		"nodemon": "^3.1.7",
+		"vite": "^7.3.1"
+	}
+}
