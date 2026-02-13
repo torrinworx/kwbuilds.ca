@@ -22,6 +22,9 @@ import Stasis from './components/Stasis.jsx';
 
 import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Auth from './pages/Auth.jsx';
+import Home from './pages/Home.jsx';
+
 
 let appContext;
 appContext = await syncState();
@@ -58,6 +61,8 @@ const stage = {
 	acts: {
 		landing: Landing,
 		fallback: NotFound,
+		auth: Auth,
+		home: Home,
 	},
 	onOpen: () => {
 		window.scrollTo(0, 0);
