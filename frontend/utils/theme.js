@@ -3,9 +3,9 @@ import { OObject } from "destam-dom";
 import { atomic } from "destam/Network";
 
 const mainColors = {
-	$color_purple: '#500089',
-	$color_white: '#FFFFFF',
-	$color_slate: '#7F6BFE',
+	$color_purple: 'black',
+	$color_white: 'white',
+	$color_slate: 'gray',
 };
 
 const themeModes = {
@@ -103,6 +103,10 @@ export const theme = OObject({
 	divider_secondary: {
 		extends: 'secondary',
 		background: '$color_background',
+	},
+	icon: {
+		width: 'clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem)',
+		height: 'clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem)',
 	},
 });
 
