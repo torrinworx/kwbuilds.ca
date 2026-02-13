@@ -35,5 +35,16 @@ core({
 	db: process.env.db,
 	table: process.env.table,
 	env: process.env.ENV,
-	port: process.env.PORT
+	port: process.env.PORT,
+
+	moduleConfig: {
+		'posts/Create': {
+			fields: {
+				name: false,
+				description: {
+					maxLength: 5000,
+				},
+			},
+		},
+	},
 });
