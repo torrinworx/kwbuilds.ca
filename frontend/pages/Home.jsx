@@ -39,7 +39,8 @@ const Home = AppContext.use(app => StageContext.use(s => suspend(Stasis, async (
 	const PostCard = ({ each: post }) => {
 		const rawImage = Array.isArray(post.images) ? post.images[0] : null;
 		const imagePath = rawImage && rawImage.startsWith('/') ? rawImage.slice(1) : rawImage;
-		const imageUrl = imagePath ? `/files/${imagePath}` : null;
+		const imageUrl = imagePath ? `/files/${imagePath.slice(1)}` : null;
+
 		const excerpt = (post.description || '').trim().slice(0, 150);
 		const summary = excerpt.length === (post.description || '').trim().length
 			? excerpt
