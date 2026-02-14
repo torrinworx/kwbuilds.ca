@@ -89,7 +89,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			if (!viewedUuid) return Observer.immutable(null);
 
 			const data = await modReq('users/Read', { id: viewedUuid });
-			console.log("THIS IS DATA: ", data)
 			if (!data || data?.error) return Observer.immutable(null);
 
 			return Observer.immutable(normalizeOtherProfile(data));
