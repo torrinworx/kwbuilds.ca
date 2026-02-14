@@ -104,9 +104,15 @@ export const theme = OObject({
 		extends: 'secondary',
 		background: '$color_background',
 	},
+
 	icon: {
 		width: 'clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem)',
 		height: 'clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem)',
+	},
+
+	radius: {
+		$radius: '0px',
+		borderRadius: '$radius',
 	},
 });
 
@@ -116,8 +122,8 @@ export const themeSetup = (app) => {
 	app.theme = theme;
 	document.documentElement.style.backgroundColor = theme.observer.path(['primary', '$color_background']);
 	app.observer.path(['themeMode']).effect(mode => atomic(() => {
-		const current = mode ? 'dark' : 'light';
-		const opposite = mode ? 'light' : 'dark';
+		const current = mode ? 'light' : 'dark';
+		const opposite = mode ? 'dark' : 'light';
 
 		for (const key of Object.keys(themeModes[current])) {
 			theme.primary[key] = themeModes[current][key];
