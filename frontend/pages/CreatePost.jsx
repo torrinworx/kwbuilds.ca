@@ -16,6 +16,7 @@ import {
 import { modReq } from 'destam-web-core/client';
 
 import Paper from '../components/Paper.jsx';
+import Markdown from '../components/Markdown.jsx';
 
 const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) => {
 	const FILE_LIMIT = 10 * 1024 * 1024;
@@ -35,6 +36,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const submit = Observer.mutable(false);
 	const allValid = Observer.mutable(true);
 	const error = Observer.mutable('');
+	const descriptionMode = Observer.mutable('edit');
 
 	const Tag = ({ each: tag }) => {
 		const index = tags.indexOf(tag);
@@ -241,12 +243,34 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				<Typography type='p1' label="Give your gig a name! Everyone will see this, no pressure... 😉" />
 			</div>
 
-			<div theme='column' style={{ gap: 10 }} >
-				<Typography type='h2' label='Description' />
-				<div theme='divider' />
-				<Typography type='p1' label='Give your gig a nice and detailed description.' />
+		<div theme='column' style={{ gap: 10 }} >
+			<Typography type='h2' label='Description' />
+			<div theme='divider' />
+			<Typography type='p1' label='Give your gig a nice and detailed description.' />
 
-				<div theme='column_tight'>
+			<div theme='column_tight' style={{ gap: 12 }}>
+				<div theme='row_wrap' style={{ gap: 12, alignItems: 'center' }}>
+					<div theme='tight_radius_shadow'>
+						<div theme='row_radius_primary_focused_tight' style={{ overflow: 'clip' }}>
+							<Button
+								type={descriptionMode.map(mode => mode === 'edit' ? 'contained' : 'text')}
+								label='Edit'
+								onClick={() => descriptionMode.set('edit')}
+								icon={<Icon name='feather:edit' />}
+								iconPosition='left'
+							/>
+							<Button
+								type={descriptionMode.map(mode => mode === 'preview' ? 'contained' : 'text')}
+								label='Preview'
+								onClick={() => descriptionMode.set('preview')}
+								icon={<Icon name='feather:eye' />}
+								iconPosition='left'
+							/>
+						</div>
+					</div>
+				</div>
+
+				<Shown value={descriptionMode.map(mode => mode === 'edit')}>
 					<TextArea
 						type='contained'
 						style={{ width: '100%', minHeight: 200 }}
@@ -255,25 +279,33 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 						maxHeight={500}
 						disabled={disabled}
 					/>
-					<div theme='row_fill_end'>
-						<Validate
-							value={description}
-							signal={submit}
-							validate={val => {
-								const v = (val.get() || '').trim();
-								if (!v) return 'Description is required.';
-								if (v.length > 2000) return 'Description must be 2000 characters or less.';
-								return '';
-							}}
-						/>
-						<Typography
-							type='p2'
-							label={description.map(n => `2000/${n.length}`)}
-							style={{ color: description.map(d => d.length > 2000 ? '$color_error' : '$color') }}
-						/>
-					</div>
+				</Shown>
+
+				<Shown value={descriptionMode.map(mode => mode === 'preview')}>
+					<Paper style={{ width: '100%', minHeight: 200, padding: 24 }}>
+						<Markdown value={description} />
+					</Paper>
+				</Shown>
+
+				<div theme='row_fill_end'>
+					<Validate
+						value={description}
+						signal={submit}
+						validate={val => {
+							const v = (val.get() || '').trim();
+							if (!v) return 'Description is required.';
+							if (v.length > 2000) return 'Description must be 2000 characters or less.';
+							return '';
+						}}
+					/>
+					<Typography
+						type='p2'
+						label={description.map(n => `2000/${n.length}`)}
+						style={{ color: description.map(d => d.length > 2000 ? '$color_error' : '$color') }}
+					/>
 				</div>
 			</div>
+		</div>
 
 			<div theme='column' style={{ gap: 10 }} >
 				<div theme='row_center_fill_spread_wrap'>
