@@ -41,7 +41,6 @@ Theme.define({
 		transition: 'transform 180ms ease, box-shadow 180ms ease',
 		width: '100%',
 		maxWidth: 320,
-		aspectRatio: '5 / 6',
 		minHeight: 0,
 	},
 
@@ -86,21 +85,22 @@ Theme.define({
 		flex: '1 1 auto',
 		display: 'flex',
 		flexDirection: 'column',
-		gap: 8,
-		padding: '16px 18px 24px',
-		justifyContent: 'flex-end',
+		gap: 4,
+		padding: '12px 14px 12px',
+		justifyContent: 'flex-start',
 		textAlign: 'left',
 		minHeight: 0,
-		flexBasis: '40%',
+		alignItems: 'flex-start',
 	},
 
 	posts_card_tag_row: {
 		display: 'flex',
 		flexWrap: 'wrap',
 		gap: 6,
-		marginTop: 'auto',
 		justifyContent: 'flex-start',
 		alignItems: 'flex-start',
+		width: '100%',
+		marginTop: 8,
 	},
 
 	posts_empty: {
@@ -134,7 +134,7 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 		style={{ padding: 0 }}
 		onClick={handleClick}
 	>
-		<Paper theme='column_fill_center'>
+		<Paper theme='column_fill_center' style={{ paddingBottom: 0 }}>
 			<div
 				theme='posts_card_image'
 				style={{
