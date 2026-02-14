@@ -21,7 +21,11 @@ const size2 = 'clamp(1.45rem, 1.2rem + 1.1vw, 2rem)';
 
 const Landing = StageContext.use(s => () => (
 	<>
-		<div theme="column_fill_contentContainer">
+		<div theme="column_fill" style={{
+			padding: 20,
+			maxWidth: 800,
+			gap: 20,
+		}}>
 			{/* HERO */}
 			<div theme="column_fill_center" style={{ gap: 40, margin: '80px 0' }}>
 				<Typography
