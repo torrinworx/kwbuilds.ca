@@ -18,16 +18,15 @@ Theme.define({
 		gap: 6,
 	},
 
-	posts_row: {
-		extends: 'fill',
+	posts_grid: {
 		display: 'grid',
-		gridAutoFlow: 'column',
+		gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 320px))',
 		gap: 18,
-		overflowX: 'auto',
-		padding: '6px 4px 6px 0',
+		justifyContent: 'flex-start',
 		width: '100%',
-		scrollBehavior: 'smooth',
 		paddingBottom: 6,
+		paddingRight: 6,
+		overflow: 'visible',
 	},
 
 	posts_card: {
@@ -35,14 +34,15 @@ Theme.define({
 		background: '$color_surface',
 		border: '0',
 		padding: 0,
-		minWidth: 260,
-		maxWidth: 320,
-		minHeight: 340,
 		display: 'flex',
 		flexDirection: 'column',
 		textAlign: 'left',
 		overflow: 'hidden',
 		transition: 'transform 180ms ease, box-shadow 180ms ease',
+		width: '100%',
+		maxWidth: 320,
+		aspectRatio: '5 / 6',
+		minHeight: 0,
 	},
 
 	posts_card_hovered: {
@@ -52,7 +52,8 @@ Theme.define({
 
 	posts_card_image: {
 		width: '100%',
-		height: 196,
+		aspectRatio: '1 / 1',
+		flex: '0 0 auto',
 		position: 'relative',
 		background: 'linear-gradient(135deg, $color, $color_hover)',
 		overflow: 'hidden',
@@ -81,6 +82,27 @@ Theme.define({
 		display: 'flex',
 	},
 
+	posts_card_body: {
+		flex: '1 1 auto',
+		display: 'flex',
+		flexDirection: 'column',
+		gap: 8,
+		padding: '16px 18px 24px',
+		justifyContent: 'flex-end',
+		textAlign: 'left',
+		minHeight: 0,
+		flexBasis: '40%',
+	},
+
+	posts_card_tag_row: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		gap: 6,
+		marginTop: 'auto',
+		justifyContent: 'flex-start',
+		alignItems: 'flex-start',
+	},
+
 	posts_empty: {
 		borderRadius: 20,
 		padding: '30px 24px',
@@ -99,9 +121,6 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 	const hovered = Observer.mutable(false);
 	const rawImage = Array.isArray(post?.images) ? post.images[0] : null;
 	const imageUrl = `/files/${rawImage.slice(1)}`;
-	const description = (post?.description || '').trim();
-	const excerpt = description.slice(0, 170);
-	const summary = excerpt.length === description.length ? excerpt : `${excerpt}…`;
 	const tags = Array.isArray(post?.tags) ? post.tags : [];
 
 	const handleClick = () => {
@@ -128,16 +147,9 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 			>
 				<div theme={['posts_card_overlay', hovered.bool('posts_card_overlay_visible', null)]} />
 			</div>
-			<div style={{
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 8,
-				padding: '16px 18px 24px',
-				flex: 1,
-			}}>
+			<div theme='posts_card_body'>
 				<Typography type='h3' label={post?.name || 'Untitled project'} style={{ lineHeight: 1.3 }} />
-				<Typography type='p1' label={summary || 'No description yet'} style={{ color: '$color_text_subtle', lineHeight: 1.4 }} />
-				<div theme='row_fill_wrap' style={{ gap: 6, marginTop: 'auto' }}>
+				<div theme='posts_card_tag_row'>
 					{tags.slice(0, 6).map(tag => <TagChip key={tag} tag={tag} />)}
 				</div>
 			</div>
@@ -151,7 +163,7 @@ const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.'
 	return <div theme='posts_section'>
 		<Shown value={normalized.length > 0}>
 			<mark:then>
-				<div theme='posts_row_fill'>
+				<div theme='posts_grid'>
 					<PostTile each={normalized} />
 				</div>
 			</mark:then>
