@@ -134,7 +134,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 			error.set(response.error);
 			disabled.set(false);
 		} else {
-			stage.open({ name: 'gig', urlProps: { id: response }, props: { id: response } });
+			stage.open({ name: 'post', urlProps: { id: response }, props: { id: response } });
 		}
 	};
 
