@@ -22,12 +22,12 @@ const loadEnv = async (filePath = './.env') => {
 		console.error(`Failed to load .env file: ${e.message}`);
 	}
 };
- 
+
 if (!isProd) {
 	await loadEnv();
 }
 
-const root = path.resolve(__dirname, process.env.ENV === 'production' ? '../dist' : './frontend');
+const root = path.resolve(__dirname, process.env.ENV === 'production' ? '../dist' : '../frontend');
 
 core({
 	server,
@@ -36,6 +36,8 @@ core({
 	table: process.env.table,
 	env: process.env.ENV,
 	port: process.env.PORT,
+
+	modulesDir: path.resolve(__dirname, './modules'),
 
 	moduleConfig: {
 		'posts/Create': {
@@ -53,5 +55,6 @@ core({
 			sortField: 'createdAt',
 			sortDir: -1,
 		},
+		'static/serve': isProd ? false : undefined,
 	},
 });
