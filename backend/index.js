@@ -22,7 +22,7 @@ const loadEnv = async (filePath = './.env') => {
 		console.error(`Failed to load .env file: ${e.message}`);
 	}
 };
-
+ 
 if (!isProd) {
 	await loadEnv();
 }
@@ -45,6 +45,13 @@ core({
 					maxLength: 5000,
 				},
 			},
+		},
+		'home/Posts': {
+			limit: 24,
+			cacheTtl: 30_000,
+			cacheSize: 64,
+			sortField: 'createdAt',
+			sortDir: -1,
 		},
 	},
 });
