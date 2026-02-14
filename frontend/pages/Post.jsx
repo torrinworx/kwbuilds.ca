@@ -1,4 +1,4 @@
-import { StageContext, suspend, Typography, Button, Icon,  } from 'destamatic-ui';
+import { StageContext, suspend, Typography, Button, Icon, } from 'destamatic-ui';
 
 import { modReq } from 'destam-web-core/client';
 
@@ -18,7 +18,7 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 		</div>;
 	};
 
-	return <div theme='column_fill_contentContainer' style={{ gap: 10 }} >
+	return <div theme='content_col'>
 		<div theme='column_fill_start'>
 			<Typography type='h1' label={post.name} />
 			<div theme='row_fill_spread' style={{ gap: 10 }}>
