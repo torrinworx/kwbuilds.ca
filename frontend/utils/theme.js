@@ -29,12 +29,14 @@ export const theme = OObject({
 
 	primary: OObject({
 		$color_hover: mainColors.$color_slate,
-		$color_disabled: 'gray'
+		$color_disabled: 'gray',
+		$color_error: 'red',
 	}),
 
 	antiPrimary: OObject({
 		$color_hover: mainColors.$color_slate,
-		$color_disabled: 'gray'
+		$color_disabled: 'gray',
+		$color_error: 'red',
 	}),
 
 	paper: {

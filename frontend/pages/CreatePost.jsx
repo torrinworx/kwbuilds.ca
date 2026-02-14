@@ -10,6 +10,7 @@ import {
 	StageContext,
 	Observer,
 	OArray,
+	LoadingDots,
 	FileDrop,
 	ThemeContext,
 } from "destamatic-ui";
@@ -20,6 +21,7 @@ import Markdown from '../components/Markdown.jsx';
 
 const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) => {
 	const FILE_LIMIT = 10 * 1024 * 1024;
+	const MAX_IMAGES = 5;
 
 	const disabled = Observer.mutable(false);
 
@@ -83,6 +85,10 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 		totalFileBytes.set(total);
 		fileCount.set(files.length);
 	}));
+
+	const isAtMaxImages = fileCount.map(count => count >= MAX_IMAGES);
+	const addImageDisabled = Observer.all([disabled, isAtMaxImages]).map(([d, maxed]) => d || maxed);
+	const fileCountLabel = fileCount.map(count => count >= MAX_IMAGES ? `Max ${MAX_IMAGES} images reached` : `${count} image${count === 1 ? '' : 's'} selected`);
 
 	const uploadFiles = async () => {
 		// grab only ready files
@@ -169,34 +175,38 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 			}
 		});
 
-		return <Paper type='fileDrop'>
-			{previewUrl.map(url => {
-				if (!url) {
-					return <Icon name="feather:file" style={{ margin: 10 }} />;
-				}
+		const fileSizeLabel = file.observer.path('file').map(f => `${prettyBytes(f?.size || 0)} / ${prettyBytes(FILE_LIMIT)}`);
+		return <Paper type='row_fill_spread' style={{ gap: 20 }}>
+			<div theme='row'>
+				{previewUrl.map(url => {
+					if (!url) {
+						return <Icon name="feather:file" style={{ margin: 10 }} />;
+					}
 
-				return <img
-					src={url}
-					alt={getFileLabel(file)}
-					style={{
-						width: 60,
-						height: 60,
-						margin: 10,
-						borderRadius: 8,
-						objectFit: 'cover',       // keeps 1/1 thumbnail nicely cropped
-						border: '1px solid rgba(0,0,0,0.15)',
-					}}
-				/>;
-			}).unwrap()}
-			<Typography type="fileDrop_expand" label={file.observer.path('name')} />
-			{file.observer.path('status').map(status => {
-				if (status === 'loading') {
-					return <LoadingDots />;
-				} else if (status === 'error') {
-					return file.observer.path('error');
-				}
-				return null;
-			}).unwrap()}
+					return <img
+						src={url}
+						alt={getFileLabel(file)}
+						style={{
+							width: 120,
+							height: 120,
+							margin: 10,
+							objectFit: 'cover',
+							aspectRatio: '1 / 1',
+							border: '1px solid rgba(0,0,0,0.15)',
+						}}
+					/>;
+				}).unwrap()}
+				<div theme='column_fill' style={{ textAlign: 'left' }}>
+					<Typography type="p1" label={file.observer.path('name')} />
+					<Typography
+						type='p2'
+						label={fileSizeLabel}
+						style={{
+							color: file.observer.path('file').map(f => f?.size > FILE_LIMIT ? '$color_error' : '$color')
+						}}
+					/>
+				</div>
+			</div>
 			<Button
 				onClick={event => {
 					event.stopPropagation();
@@ -206,7 +216,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				}}
 				icon={<Icon name="feather:x" />}
 			/>
-		</Paper>
+		</Paper>;
 	};
 
 	return <ValidateContext value={allValid}>
@@ -313,48 +323,49 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-		<div theme='column_fill' style={{ gap: 10 }} >
-			<div theme='row_center_fill_spread_wrap'>
-				<Typography type='h2' label='Image' />
-			</div>
-			<div theme='divider' />
-			<Typography type='p1' label='Show off your post with a couple nice images!' />
-			<FileDrop
-				files={files}
-				extensions={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
-				multiple
-				limit={FILE_LIMIT}
-			>
-				<div theme='column_center' style={{ padding: 20, minHeight: 150, gap: 20 }}>
-					<div theme='column' style={{ gap: 10 }}>
+			<div theme='column_fill' style={{ gap: 10 }} >
+				<div theme='row_center_fill_spread_wrap'>
+					<Typography type='h2' label='Images' />
+				</div>
+				<div theme='divider' />
+				<Typography type='p1' label={`Show off your post with a couple nice images!`} />
+				<FileDrop
+					files={files}
+					extensions={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
+					multiple
+					limit={FILE_LIMIT}
+					maxFiles={MAX_IMAGES}
+				>
+					<div theme='column_center_fill' style={{ padding: 20, minHeight: 150, gap: 20 }}>
 						<Shown value={fileCount.map(count => count > 0)}>
 							<Typography
 								type='p2'
-								label={fileCount.map(count => `${count} image${count === 1 ? '' : 's'} selected`)}
-								style={{ color: '$color' }}
+								label={fileCountLabel}
+								style={{ color: isAtMaxImages.map(maxed => maxed ? '$color_error' : '$color') }}
 							/>
+							<div theme='column_fill' style={{ width: '100%', gap: 10 }}>
+								<File each={files} />
+							</div>
 						</Shown>
-						<File each={files} />
+						<FileDrop.Button icon={<Icon name='feather:image' />} label="Add images" type="contained" disabled={addImageDisabled} />
 					</div>
-					<FileDrop.Button label="Add images" type="contained" />
-				</div>
-			</FileDrop>
-			<div theme="row_fill_spread_end">
-				<Validate
-					value={totalFileBytes}
-					signal={submit}
-					validate={val => {
-						if (files.length === 0) return 'At least one image is required for your post.';
-						if (val.get() > FILE_LIMIT) return `Images are too big. Max total ${prettyBytes(FILE_LIMIT)}.`;
-						return '';
-					}}
-				/>
-
-					<Typography
-						type="p2"
-						label={totalFileBytes.map(b => `${prettyBytes(b)}/${prettyBytes(FILE_LIMIT)}`)}
-						style={{
-							color: totalFileBytes.map(b => b > FILE_LIMIT ? '$color_error' : '$color')
+					<Shown value={isAtMaxImages}>
+						<Typography
+							type='p2'
+							label={`Maximum of ${MAX_IMAGES} images reached. Remove one to add more.`}
+							style={{ color: '$color_error' }}
+						/>
+					</Shown>
+				</FileDrop>
+				<div theme="row_fill_spread_end">
+					<Validate
+						value={totalFileBytes}
+						signal={submit}
+						validate={val => {
+							if (files.length === 0) return 'At least one image is required for your post.';
+							if (files.length > MAX_IMAGES) return `A maximum of ${MAX_IMAGES} images is allowed.`;
+							if ([...files].some(file => file.status === 'error')) return 'Fix the image errors before publishing.';
+							return '';
 						}}
 					/>
 				</div>

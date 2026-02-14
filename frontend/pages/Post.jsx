@@ -1,4 +1,4 @@
-import { StageContext, suspend, Typography, Button, Icon, Shown } from 'destamatic-ui';
+import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from 'destamatic-ui';
 
 import { modReq } from 'destam-web-core/client';
 
@@ -55,6 +55,16 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 
 	const heroImage = post?.images?.[0] ? `/files/${post.images[0].slice(1)}` : null;
 	const normalizedTags = getTagArray(post.tags);
+	const images = post.images ?? [];
+	const imageCount = images.length;
+	const imageIndex = Observer.mutable(0);
+	const imageDisplay = Observer.mutable(images[0] ?? null);
+	const changeImage = (delta) => {
+		if (!imageCount) return;
+		const wrapped = ((imageIndex.get() + delta) % imageCount + imageCount) % imageCount;
+		imageIndex.set(wrapped);
+		imageDisplay.set(images[wrapped]);
+	};
 
 	const formatDMY = (ms) => {
 		const d = new Date(ms);
@@ -64,20 +74,26 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 		return `${dd}-${mm}-${yyyy}`;
 	};
 
+	console.log(post.images);
+
 	return <div theme='content_col' style={{ gap: 20 }}>
 		<Paper theme='column_fill' style={{ gap: 20, overflow: 'clip' }}>
 			<div theme='fill' style={{
 				height: '100%',
 				overflow: 'hidden',
-				background: heroImage ? `url(${heroImage}) center/cover` : '$color_background',
+				background: imageDisplay.map(img => img ? `url(/files/${img.slice(1)}) center/cover` : '$color_background'),
 				aspectRatio: '1 / 1',
 			}} />
-			<Shown value={post.images > 1}>
-				<div theme='row_fill_spread'>
-					<Button icon={<Icon name='feather:chevron-left' />} onClick={() => { }} />
-					<Button icon={<Icon name='feather:chevron-right' />} onClick={() => { }} />
-				</div>
-			</Shown>
+		<Shown value={imageCount > 1}>
+			<div theme='row_fill_spread'>
+				<Button icon={<Icon name='feather:chevron-left' />} onClick={() => {
+					changeImage(-1);
+				}} />
+				<Button icon={<Icon name='feather:chevron-right' />} onClick={() => {
+					changeImage(1);
+				}} />
+			</div>
+		</Shown>
 			<Typography type='h1' label={post.name} />
 			<div theme='row_fill_wrap' style={{ gap: 10 }}>
 				<Tag each={normalizedTags} />
