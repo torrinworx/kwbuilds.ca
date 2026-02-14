@@ -5,6 +5,7 @@ import { modReq } from 'destam-web-core/client';
 import NotFound from './NotFound.jsx'
 import Stasis from '../components/Stasis.jsx';
 import AppContext from '../utils/appContext.js';
+import Markdown from '../components/Markdown.jsx';
 
 const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, async () => {
 	const post = await modReq('posts/Read', { id: stage.observer.path('urlProps').get().id })
@@ -13,45 +14,92 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	const user = await modReq('users/Read', { id: post.user });
 
 	const Tag = ({ each }) => {
+		console.log(each)
+		if (!each) return null;
+		const label = `${each}`.charAt(0).toUpperCase() + `${each}`.slice(1);
 		return <div theme='radius_primary' style={{ background: '$color', padding: 10 }}>
-			<Typography type='p1_bold' style={{ color: '$color_background' }} label={each.charAt(0).toUpperCase() + each.slice(1)} />
+			<Typography type='p1_bold' style={{ color: '$color_background' }} label={label} />
 		</div>;
 	};
 
-	return <div theme='content_col'>
-		<div theme='column_fill_start'>
-			<Typography type='h1' label={post.name} />
-			<div theme='row_fill_spread' style={{ gap: 10 }}>
-				<Button type='outlined' label={user?.name ? user.name : 'Unknown'} iconPosition='left' icon={<Icon name='feather:user' />} onClick={() => stage.open({ name: 'user', urlProps: { id: post.user } })} />
-			</div>
-		</div>
+	const rebuildTagsFromCharArray = (chars) => {
+		const tokens = [];
+		let active = '';
 
-		{/* <Shown value={app?.sync?.state?.profile?.id != gig.user}>
-			<div theme='column_fill_contentContainer' style={{ marginTop: 12, gap: 8 }}>
-				<Typography type='h2' label={gig.type === 'offer'
-					? 'Need a quote for this gig offer?'
-					: 'Can you fullfill this gig request?'} />
-				<TextArea type='outlined' maxHeight='200' style={{ height: 200 }} value={msgText} placeholder='Message' />
-				<div theme='row_fill_center' style={{ gap: 8, marginTop: 12 }}>
-					<Button
-						type='contained'
-						label='Send'
-						iconPosition='right'
-						icon={<Icon name='feather:send' />}
-						onClick={send}
-					/>
+		const flush = () => {
+			if (active) {
+				tokens.push(active);
+				active = '';
+			}
+		};
+
+		for (const ch of chars) {
+			if (ch === ',' || ch === ' ') {
+				flush();
+				continue;
+			}
+			active += ch;
+		}
+		flush();
+
+		return tokens;
+	};
+
+	const getTagArray = (value) => {
+		if (!value) return [];
+		if (Array.isArray(value)) {
+			const normalized = value.map(tag => `${tag || ''}`.trim()).filter(Boolean);
+			if (normalized.length && normalized.every(tag => tag.length === 1)) {
+				return rebuildTagsFromCharArray(normalized);
+			}
+			return normalized;
+		}
+		if (typeof value === 'string') {
+			return value.split(',').map(tag => tag.trim()).filter(Boolean);
+		}
+		return [];
+	};
+
+	const heroImage = post?.images?.[0] ? `/files/${post.images[0].slice(1)}` : null;
+	const normalizedTags = getTagArray(post.tags);
+
+	return <div theme='content_col' style={{ gap: 16 }}>
+		<div style={{ width: '100%' }}>
+			<div style={{
+				position: 'relative',
+				height: 220,
+				borderRadius: 16,
+				overflow: 'hidden',
+				background: heroImage ? `url(${heroImage}) center/cover` : '$color_background',
+			}}>
+				<div style={{
+					position: 'absolute',
+					inset: 0,
+					background: 'linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.6))',
+					display: 'flex',
+					alignItems: 'flex-end',
+					padding: '16px 24px',
+				}}>
+					<Typography type='h1' style={{ color: '#fff', textShadow: '0 4px 12px rgba(0,0,0,0.4)' }} label={post.name} />
 				</div>
 			</div>
-		</Shown> */}
-		<div theme='divider' />
-		<Typography type='p1' label={post.description} />
-		<Typography type='h2' label='Tags' />
-		<div theme='divider' />
-		<div theme='row_fill_wrap'>
-			<Tag each={post.tags} />
 		</div>
 
-		<img src={`/files/${post?.images?.[0]?.slice(1)}`} />
+		<div theme='row_fill_spread' style={{ gap: 12, alignItems: 'center' }}>
+			<Button
+				type='outlined'
+				label={user?.name ? user.name : 'Unknown'}
+				iconPosition='left'
+				icon={<Icon name='feather:user' />}
+				onClick={() => stage.open({ name: 'user', urlProps: { id: post.user } })}
+			/>
+		</div>
+		<div theme='divider' />
+		<div theme='row_fill_wrap' style={{ gap: 8 }}>
+			<Tag each={normalizedTags} />
+		</div>
+
+		<Markdown value={post.description} />
 	</div>;
 })));
 
