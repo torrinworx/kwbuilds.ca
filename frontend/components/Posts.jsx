@@ -102,15 +102,6 @@ Theme.define({
 		width: '100%',
 		marginTop: 8,
 	},
-
-	posts_empty: {
-		borderRadius: 20,
-		padding: '30px 24px',
-		background: 'linear-gradient(145deg, #fdfdfd, #eef3ff)',
-		boxShadow: '0 18px 38px rgba(0,0,0,0.08)',
-		width: '100%',
-		textAlign: 'center',
-	},
 });
 
 const TagChip = ({ tag }) => tag ? <div theme='posts_tag_chip'>
@@ -168,7 +159,7 @@ const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.'
 				</div>
 			</mark:then>
 			<mark:else>
-				<div theme='posts_empty'>
+				<div theme='row_fill'>
 					<Typography type='p1' label={emptyMessage} style={{ color: '$color_text_subtle' }} />
 				</div>
 			</mark:else>
