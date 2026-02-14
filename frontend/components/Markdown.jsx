@@ -3,10 +3,16 @@ import { Observer, TextModifiers, Typography, Button, Checkbox, Theme, Icon } fr
 Theme.define({
 	markdown: {
 		display: 'block',
+		whiteSpace: 'normal',
+		overflowWrap: 'anywhere',
+		wordBreak: 'break-word',
 	},
 
 	markdown_block: {
 		marginBottom: 12,
+		whiteSpace: 'normal',
+		overflowWrap: 'anywhere',
+		wordBreak: 'break-word',
 	},
 
 	markdown_codeblock: {
