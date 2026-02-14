@@ -148,8 +148,14 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 	</Button>;
 });
 
+const resolvePostsInput = (value) => {
+    if (!value) return [];
+    if (typeof value?.get === 'function') return resolvePostsInput(value.get());
+    return Array.isArray(value) ? value : [];
+};
+
 const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.' }) => {
-	const normalized = Array.isArray(posts) ? posts : [];
+    const normalized = resolvePostsInput(posts);
 
 	return <div theme='posts_section'>
 		<Shown value={normalized.length > 0}>
