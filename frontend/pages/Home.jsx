@@ -1,4 +1,4 @@
-import { Button, Icon, StageContext, suspend, Typography, mark, Shown } from "destamatic-ui";
+import { Button, Icon, StageContext, suspend, Typography, Shown } from "destamatic-ui";
 
 // import SearchBar from '../components/SearchBar.jsx';
 import Stasis from '../components/Stasis.jsx';
@@ -10,31 +10,31 @@ const FEATURE_CATEGORIES = [
 		tag: 'startup',
 		title: 'Startup ideas',
 		subtitle: 'Fresh experiments and business pivots from builders.',
-		emptyMessage: 'No startup posts yet. Share your bold idea to spark this feed.',
 	},
 	{
 		tag: 'open source',
 		title: 'Open source',
 		subtitle: 'Community-built tooling, libraries, and experiments.',
-		emptyMessage: 'No open source work has been published yet.',
+	},
+	{
+		tag: 'personal',
+		title: 'Personal projects',
+		subtitle: 'Side quests, learning builds, and projects made for fun or growth.',
 	},
 	{
 		tag: 'ai',
 		title: 'AI',
 		subtitle: 'Latest creations leveraging emerging intelligence stacks.',
-		emptyMessage: 'No AI projects yet. Be the first to share a trained model or demo.',
 	},
 	{
 		tag: 'hardware',
 		title: 'Hardware',
 		subtitle: 'Physical builds, prototypes, and cyber-physical mashups.',
-		emptyMessage: 'No hardware builds have been shared yet.',
 	},
 	{
 		tag: 'hacking',
 		title: 'Hacking',
 		subtitle: 'Playful, experimental, and curiosity-driven builds.',
-		emptyMessage: 'No hacking posts yet. Drop a mad scientist project to kick this off.',
 	},
 ];
 
@@ -44,7 +44,6 @@ const Home = AppContext.use(app => StageContext.use(s => suspend(Stasis, async (
 	const rows = await Promise.all(FEATURE_CATEGORIES.map(async (row) => {
 		try {
 			const result = await app.modReq('home/Posts', { limit: ROW_LIMIT, tags: [row.tag] });
-			console.log(result);
 			if (!Array.isArray(result)) {
 				return { ...row, posts: [], error: result?.error || 'Unexpected response from posts module' };
 			}
