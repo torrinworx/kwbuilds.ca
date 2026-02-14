@@ -63,23 +63,23 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	const normalizedTags = getTagArray(post.tags);
 
 	return <div theme='content_col' style={{ gap: 16 }}>
-		<div style={{ width: '100%' }}>
+		<div theme='fill' style={{ width: '100%' }}>
 			<div style={{
 				position: 'relative',
-				height: 220,
-				borderRadius: 16,
+				height: '100%',
 				overflow: 'hidden',
 				background: heroImage ? `url(${heroImage}) center/cover` : '$color_background',
+				aspectRatio: '1 / 1',
 			}}>
 				<div style={{
 					position: 'absolute',
 					inset: 0,
-					background: 'linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.6))',
+					background: 'linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.1))',
 					display: 'flex',
 					alignItems: 'flex-end',
 					padding: '16px 24px',
 				}}>
-					<Typography type='h1' style={{ color: '#fff', textShadow: '0 4px 12px rgba(0,0,0,0.4)' }} label={post.name} />
+					<Typography type='h1' label={post.name} />
 				</div>
 			</div>
 		</div>
@@ -98,7 +98,7 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 			<Tag each={normalizedTags} />
 		</div>
 
-		<Markdown value={post.description} />
+		<Markdown value={post.description} theme='fill' />
 	</div>;
 })));
 
