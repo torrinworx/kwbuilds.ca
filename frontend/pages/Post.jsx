@@ -1,4 +1,4 @@
-import { StageContext, suspend, Typography, Button, Icon, TextArea, Observer, Shown } from 'destamatic-ui';
+import { StageContext, suspend, Typography, Button, Icon,  } from 'destamatic-ui';
 
 import { modReq } from 'destam-web-core/client';
 
@@ -17,9 +17,6 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 			<Typography type='p1_bold' style={{ color: '$color_background' }} label={each.charAt(0).toUpperCase() + each.slice(1)} />
 		</div>;
 	};
-
-	console.log(user);
-	console.log(post.images);
 
 	return <div theme='column_fill_contentContainer' style={{ gap: 10 }} >
 		<div theme='column_fill_start'>
@@ -54,7 +51,7 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 			<Tag each={post.tags} />
 		</div>
 
-		<img src={`/files/${post.images[0].slice(1)}`} />
+		<img src={`/files/${post?.images?.[0]?.slice(1)}`} />
 	</div>;
 })));
 
