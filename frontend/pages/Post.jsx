@@ -65,7 +65,7 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	};
 
 	return <div theme='content_col' style={{ gap: 20 }}>
-		<Paper theme='column_fill' style={{ gap: 20 }}>
+		<Paper theme='column_fill' style={{ gap: 20, overflow: 'clip' }}>
 			<div theme='fill' style={{
 				height: '100%',
 				overflow: 'hidden',
@@ -102,7 +102,9 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 		</div>
 		<div theme='divider' />
 
-		<Markdown value={post.description} theme='fill' />
+		<div theme="content_col" style={{ gap: 40, minWidth: 0 }}>
+			<Markdown value={post.description} theme='fill' />
+		</div>
 	</div>;
 })));
 
