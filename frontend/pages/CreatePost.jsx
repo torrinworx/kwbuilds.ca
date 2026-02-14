@@ -28,6 +28,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const tags = OArray([]);
 	const curTag = Observer.mutable('');
 	const files = OArray([]);
+	const fileCount = Observer.mutable(0);
 
 	const focused = Observer.mutable(false);
 	const hovered = Observer.mutable(false);
@@ -78,7 +79,9 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const totalFileBytes = Observer.mutable(0);
 	// total of selected files (you use multiple={false}, but this still works)
 	cleanup(files.observer.watch(() => {
-		totalFileBytes.set([...files].reduce((sum, f) => sum + (f?.file?.size || 0), 0));
+		const total = [...files].reduce((sum, f) => sum + (f?.file?.size || 0), 0);
+		totalFileBytes.set(total);
+		fileCount.set(files.length);
 	}));
 
 	const uploadFiles = async () => {
@@ -115,7 +118,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 			return;
 		}
 
-		let uploadResults = null;
+		let uploadResults = [];
 		try {
 			uploadResults = await uploadFiles();
 		} catch (e) {
@@ -125,11 +128,13 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 			return;
 		}
 
+		const imageIds = (uploadResults || []).map(item => item?.id ?? item).filter(Boolean);
 		const response = await modReq('posts/Create', {
 			name: name.get(),
 			description: description.get(),
 			tags,
-			image: uploadResults[0],
+			images: imageIds,
+			image: imageIds[0] ?? null,
 		});
 
 		if (response.error) {
@@ -308,35 +313,42 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-			<div theme='column_fill' style={{ gap: 10 }} >
-				<div theme='row_center_fill_spread_wrap'>
-					<Typography type='h2' label='Image' />
-				</div>
-				<div theme='divider' />
-				<Typography type='p1' label='Show off your post with a couple nice images!' />
-				<FileDrop
-					files={files}
-					extensions={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
-					multiple={false}
-				>
-					<div theme='column_center' style={{ padding: 20, minHeight: 150, gap: 20 }}>
-						<div theme='column' style={{ gap: 10 }}>
-							<File each={files} />
-
-						</div>
-						<FileDrop.Button label="Choose image" type="contained" />
+		<div theme='column_fill' style={{ gap: 10 }} >
+			<div theme='row_center_fill_spread_wrap'>
+				<Typography type='h2' label='Image' />
+			</div>
+			<div theme='divider' />
+			<Typography type='p1' label='Show off your post with a couple nice images!' />
+			<FileDrop
+				files={files}
+				extensions={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
+				multiple
+				limit={FILE_LIMIT}
+			>
+				<div theme='column_center' style={{ padding: 20, minHeight: 150, gap: 20 }}>
+					<div theme='column' style={{ gap: 10 }}>
+						<Shown value={fileCount.map(count => count > 0)}>
+							<Typography
+								type='p2'
+								label={fileCount.map(count => `${count} image${count === 1 ? '' : 's'} selected`)}
+								style={{ color: '$color' }}
+							/>
+						</Shown>
+						<File each={files} />
 					</div>
-				</FileDrop>
-				<div theme="row_fill_spread_end">
-					<Validate
-						value={totalFileBytes}
-						signal={submit}
-						validate={val => {
-							if (files.length === 0) return 'Image is required. Your gig must have an image.';
-							if (val.get() > FILE_LIMIT) return `Image is too big. Max ${prettyBytes(FILE_LIMIT)}.`;
-							return '';
-						}}
-					/>
+					<FileDrop.Button label="Add images" type="contained" />
+				</div>
+			</FileDrop>
+			<div theme="row_fill_spread_end">
+				<Validate
+					value={totalFileBytes}
+					signal={submit}
+					validate={val => {
+						if (files.length === 0) return 'At least one image is required for your post.';
+						if (val.get() > FILE_LIMIT) return `Images are too big. Max total ${prettyBytes(FILE_LIMIT)}.`;
+						return '';
+					}}
+				/>
 
 					<Typography
 						type="p2"
