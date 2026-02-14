@@ -24,7 +24,8 @@ import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Auth from './pages/Auth.jsx';
 import Home from './pages/Home.jsx';
-
+import CreatePost from './pages/CreatePost.jsx';
+import Post from './pages/Post.jsx';
 
 let appContext;
 appContext = await syncState();
@@ -63,6 +64,8 @@ const stage = {
 		fallback: NotFound,
 		auth: Auth,
 		home: Home,
+		'create-post': authorize(CreatePost),
+		post: Post,
 	},
 	onOpen: () => {
 		window.scrollTo(0, 0);
