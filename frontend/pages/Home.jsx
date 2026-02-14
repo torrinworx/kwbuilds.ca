@@ -66,7 +66,9 @@ const Home = AppContext.use(app => StageContext.use(s => suspend(Stasis, async (
 				<Typography type='h2' label={`Failed to load ${each.title.toLowerCase()}: ${each.error}`} />
 			</mark:then>
 			<mark:else>
-				<Posts posts={each.posts} />
+				<div theme='fill_column' style={{ padding: 20 }}>
+					<Posts posts={each.posts} />
+				</div>
 			</mark:else>
 		</Shown>
 	</>;
