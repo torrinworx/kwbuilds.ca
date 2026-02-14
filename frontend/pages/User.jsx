@@ -88,7 +88,8 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 			if (!viewedUuid) return Observer.immutable(null);
 
-			const data = await modReq('users/Get', { uuid: viewedUuid });
+			const data = await modReq('users/Read', { id: viewedUuid });
+			console.log("THIS IS DATA: ", data)
 			if (!data || data?.error) return Observer.immutable(null);
 
 			return Observer.immutable(normalizeOtherProfile(data));
@@ -103,149 +104,147 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			return viewedUuid === selfUuid;
 		});
 
-		return <>
-			{profileObs.map(p => {
-				if (!p) return <NotFound />;
+		return profileObs.map(p => {
+			if (!p) return <NotFound />;
 
-				const nameObs = p.observer.path('name');
-				const editName = Observer.mutable(false);
-				const draftName = Observer.mutable(nameObs.get() ?? '');
+			const nameObs = p.observer.path('name');
+			const editName = Observer.mutable(false);
+			const draftName = Observer.mutable(nameObs.get() ?? '');
 
-				const imageUrl = p.observer
-					.path('image')
-					.map(img => img ? `/files/${img.slice(1)}` : false);
+			const imageUrl = p.observer
+				.path('image')
+				.map(img => img ? `/files/${img.slice(1)}` : false);
 
-				return <>
-					<div theme="column_center_fill_contentContainer">
-						<div style={{ position: 'relative', margin: '0 auto' }}>
-							<ProfileCircle
-								size="20vw"
-								maxSize={200}
-								minSize={150}
-								imageUrl={imageUrl}
-							/>
-
-							<Shown value={canEditObs}>
-								<div style={{ position: 'absolute', right: 10, bottom: 10 }}>
-									<FileDrop
-										files={OArray()}
-										clickable={false}
-										multiple={false}
-										extensions={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
-										style={{ display: 'contents' }}
-										loader={async (file) => {
-											disabled.set(true);
-											error.set('');
-
-											try {
-												if (!file) return null;
-
-												if (file.size > FILE_LIMIT) {
-													throw new Error(`Image too big. Max ${prettyBytes(FILE_LIMIT)}.`);
-												}
-
-												const uploadResult = await uploadSingleFile(file);
-												const imageId = uploadResult?.id ?? uploadResult;
-
-												p.image = imageId;
-
-												return imageId;
-											} catch (e) {
-												error.set(e?.message || 'Upload failed');
-												throw e;
-											} finally {
-												disabled.set(false);
-											}
-										}}
-									>
-										<FileDrop.Button
-											title="Upload new profile image."
-											type="contained"
-											icon={<Icon name="feather:edit" />}
-											round
-											disabled={disabled}
-											loading={false}
-											onClick={() => { error.set(''); }}
-										/>
-									</FileDrop>
-								</div>
-							</Shown>
-						</div>
-
-						<Typography type="validate" label={error} />
+			return <>
+				<div theme="content_col">
+					<div style={{ position: 'relative', margin: '0 auto' }}>
+						<ProfileCircle
+							size="20vw"
+							maxSize={200}
+							minSize={150}
+							imageUrl={imageUrl}
+						/>
 
 						<Shown value={canEditObs}>
-							<div theme="row" style={{ gap: 20 }}>
-								<Shown value={editName.map(e => !e)}>
-									<Typography type="h2" label={Observer.immutable(nameObs)} />
-								</Shown>
+							<div style={{ position: 'absolute', right: 10, bottom: 10 }}>
+								<FileDrop
+									files={OArray()}
+									clickable={false}
+									multiple={false}
+									extensions={['image/png', 'image/jpeg', 'image/jpg', 'image/webp']}
+									style={{ display: 'contents' }}
+									loader={async (file) => {
+										disabled.set(true);
+										error.set('');
 
-								<Shown value={editName}>
-									<TextField
-										type="outlined"
-										value={draftName}
-										onInput={e => draftName.set(e.target.value)}
-									/>
-								</Shown>
+										try {
+											if (!file) return null;
 
-								<Shown value={editName.map(e => !e)}>
-									<Button
-										onClick={() => {
-											draftName.set(nameObs.get() ?? '');
-											editName.set(true);
-										}}
+											if (file.size > FILE_LIMIT) {
+												throw new Error(`Image too big. Max ${prettyBytes(FILE_LIMIT)}.`);
+											}
+
+											const uploadResult = await uploadSingleFile(file);
+											const imageId = uploadResult?.id ?? uploadResult;
+
+											p.image = imageId;
+
+											return imageId;
+										} catch (e) {
+											error.set(e?.message || 'Upload failed');
+											throw e;
+										} finally {
+											disabled.set(false);
+										}
+									}}
+								>
+									<FileDrop.Button
+										title="Upload new profile image."
+										type="contained"
 										icon={<Icon name="feather:edit" />}
+										round
+										disabled={disabled}
+										loading={false}
+										onClick={() => { error.set(''); }}
 									/>
-								</Shown>
-
-								<Shown value={editName}>
-									<Button
-										onClick={() => {
-											nameObs.set(draftName.get());
-											editName.set(false);
-										}}
-										icon={<Icon name="feather:save" />}
-									/>
-									<Button
-										onClick={() => {
-											draftName.set(nameObs.get() ?? '');
-											editName.set(false);
-										}}
-										icon={<Icon name="feather:x" />}
-									/>
-								</Shown>
+								</FileDrop>
 							</div>
 						</Shown>
-
-						<Shown value={canEditObs.map(v => !v)}>
-							<Typography type="h2" label={Observer.immutable(nameObs)} />
-						</Shown>
-
-						<Shown value={canEditObs} invert>
-							<Button
-								onClick={async () => {
-									const viewedUuid = viewedUuidObs.get();
-									const selfUuid = selfUuidObs.get();
-
-									if (viewedUuid != selfUuid) {
-										const res = await app.modReq('chat/CreateChat', { participants: [viewedUuid] });
-										stage.open({ name: 'chat', urlProps: { id: res } })
-									}
-								}}
-								label='Message'
-								iconPosition='right'
-								icon={<Icon name="feather:message-circle" />}
-							/>
-						</Shown>
-
-						<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
-						<div theme="divider" />
 					</div>
 
-					<Posts gigUuids={p.gigs} />
-				</>;
-			}).unwrap()}
-		</>;
+					<Typography type="validate" label={error} />
+
+					<Shown value={canEditObs}>
+						<div theme="row" style={{ gap: 20 }}>
+							<Shown value={editName.map(e => !e)}>
+								<Typography type="h2" label={Observer.immutable(nameObs)} />
+							</Shown>
+
+							<Shown value={editName}>
+								<TextField
+									type="outlined"
+									value={draftName}
+									onInput={e => draftName.set(e.target.value)}
+								/>
+							</Shown>
+
+							<Shown value={editName.map(e => !e)}>
+								<Button
+									onClick={() => {
+										draftName.set(nameObs.get() ?? '');
+										editName.set(true);
+									}}
+									icon={<Icon name="feather:edit" />}
+								/>
+							</Shown>
+
+							<Shown value={editName}>
+								<Button
+									onClick={() => {
+										nameObs.set(draftName.get());
+										editName.set(false);
+									}}
+									icon={<Icon name="feather:save" />}
+								/>
+								<Button
+									onClick={() => {
+										draftName.set(nameObs.get() ?? '');
+										editName.set(false);
+									}}
+									icon={<Icon name="feather:x" />}
+								/>
+							</Shown>
+						</div>
+					</Shown>
+
+					<Shown value={canEditObs.map(v => !v)}>
+						<Typography type="h2" label={Observer.immutable(nameObs)} />
+					</Shown>
+
+					<Shown value={canEditObs} invert>
+						<Button
+							onClick={async () => {
+								const viewedUuid = viewedUuidObs.get();
+								const selfUuid = selfUuidObs.get();
+
+								if (viewedUuid != selfUuid) {
+									const res = await app.modReq('chat/CreateChat', { participants: [viewedUuid] });
+									stage.open({ name: 'chat', urlProps: { id: res } })
+								}
+							}}
+							label='Message'
+							iconPosition='right'
+							icon={<Icon name="feather:message-circle" />}
+						/>
+					</Shown>
+
+					<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
+					<div theme="divider" />
+				</div>
+
+				<Posts gigUuids={p.gigs} />
+			</>;
+		}).unwrap()
 	})
 ));
 
