@@ -4,6 +4,7 @@ const isPlainObject = (v) =>
 const toArray = (input) => {
 	if (input == null) return null;
 	if (Array.isArray(input)) return input;
+	if (typeof input === 'string') return [input];
 	if (typeof input?.[Symbol.iterator] === 'function') return [...input];
 	return null;
 };
@@ -87,11 +88,11 @@ export default ({ webCore }) => {
 				.map(tag => (typeof tag === 'string' ? tag.trim() : ''))
 				.filter(Boolean);
 
-			const filter = {
-				'index.deleteAt': { $exists: false },
-			};
-			if (board) filter.board = board;
-			if (tags.length > 0) filter.tags = { $all: tags };
+		const filter = {
+			'index.deleteAt': { $exists: false },
+		};
+		if (board) filter['index.board'] = board;
+		if (tags.length > 0) filter['index.tags'] = { $all: tags };
 
 			const options = {
 				limit,
