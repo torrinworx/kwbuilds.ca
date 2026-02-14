@@ -88,12 +88,6 @@ export const theme = OObject({
 		background: '$color_background',
 	},
 
-	contentContainer: {
-		padding: 20,
-		maxWidth: 800,
-		gap: 20,
-	},
-
 	divider: {
 		marginTop: 10,
 		marginBottom: 10,
@@ -114,6 +108,17 @@ export const theme = OObject({
 		$radius: '0px',
 		borderRadius: '$radius',
 	},
+
+	content: {
+		padding: 20,
+		maxWidth: 800,
+		gap: 20,
+	},
+
+	content_col: {
+		extends: 'column_fill_center'
+	},
+
 });
 
 export const themeSetup = (app) => {
