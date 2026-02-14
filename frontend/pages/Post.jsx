@@ -14,7 +14,6 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	const user = await modReq('users/Read', { id: post.user });
 
 	const Tag = ({ each }) => {
-		console.log(each)
 		if (!each) return null;
 		const label = `${each}`.charAt(0).toUpperCase() + `${each}`.slice(1);
 		return <div theme='radius_primary' style={{ background: '$color', padding: 10 }}>
