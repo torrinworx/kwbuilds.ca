@@ -203,7 +203,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	};
 
 	return <ValidateContext value={allValid}>
-		<div theme='column_fill_contentContainer' style={{ gap: 60 }} >
+		<div theme='content' >
 			<div theme='fill_center' style={{ marginBottom: 60 }}>
 				<Typography type='h1' label='Post about your projects!' />
 			</div>
