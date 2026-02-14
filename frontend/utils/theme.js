@@ -123,6 +123,11 @@ export const theme = OObject({
 		fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
 	},
 
+	typography: {
+		extends: 'jetbrains',
+		color: '$color',
+	},
+
 	typography_body: {
 		extends: 'typography',
 		fontFamily: '"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif',
