@@ -127,15 +127,6 @@ export const theme = OObject({
 		extends: 'jetbrains',
 		color: '$color',
 	},
-
-	typography_body: {
-		extends: 'typography',
-		fontFamily: '"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif',
-		fontSize: 'clamp(1.0rem, 0.95rem + 0.35vw, 1.15rem)',
-		lineHeight: '$lh_body',
-		maxWidth: '$measure',
-		fontWeight: '400',
-	},
 });
 
 export const themeSetup = (app) => {
