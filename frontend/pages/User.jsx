@@ -221,23 +221,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 						<Typography type="h2" label={Observer.immutable(nameObs)} />
 					</Shown>
 
-					<Shown value={canEditObs} invert>
-						<Button
-							onClick={async () => {
-								const viewedUuid = viewedUuidObs.get();
-								const selfUuid = selfUuidObs.get();
-
-								if (viewedUuid != selfUuid) {
-									const res = await app.modReq('chat/CreateChat', { participants: [viewedUuid] });
-									stage.open({ name: 'chat', urlProps: { id: res } })
-								}
-							}}
-							label='Message'
-							iconPosition='right'
-							icon={<Icon name="feather:message-circle" />}
-						/>
-					</Shown>
-
 					<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
 					<div theme="divider" />
 				</div>
