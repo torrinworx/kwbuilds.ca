@@ -2,6 +2,7 @@ import { Observer } from 'destam-dom';
 import { StageContext, Theme, Typography, Button, Shown } from 'destamatic-ui';
 
 import Paper from './Paper.jsx';
+import Tag from './Tag.jsx';
 
 Theme.define({
 	posts_section: {
@@ -31,7 +32,6 @@ Theme.define({
 
 	posts_card: {
 		extends: 'radius_primary',
-		background: '$color_surface',
 		border: '0',
 		padding: 0,
 		display: 'flex',
@@ -104,10 +104,6 @@ Theme.define({
 	},
 });
 
-const TagChip = ({ tag }) => tag ? <div theme='posts_tag_chip'>
-	<Typography type='p3' label={tag} />
-</div> : null;
-
 const PostTile = StageContext.use(stage => ({ each: post }) => {
 	const hovered = Observer.mutable(false);
 	const rawImage = Array.isArray(post?.images) ? post.images[0] : null;
@@ -135,13 +131,11 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
 				}}
-			>
-				<div theme={['posts_card_overlay', hovered.bool('posts_card_overlay_visible', null)]} />
-			</div>
+			/>
 			<div theme='posts_card_body'>
 				<Typography type='h3' label={post?.name || 'Untitled project'} style={{ lineHeight: 1.3 }} />
 				<div theme='posts_card_tag_row'>
-					{tags.slice(0, 6).map(tag => <TagChip key={tag} tag={tag} />)}
+					<Tag each={tags} />
 				</div>
 			</div>
 		</Paper>
@@ -149,13 +143,13 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 });
 
 const resolvePostsInput = (value) => {
-    if (!value) return [];
-    if (typeof value?.get === 'function') return resolvePostsInput(value.get());
-    return Array.isArray(value) ? value : [];
+	if (!value) return [];
+	if (typeof value?.get === 'function') return resolvePostsInput(value.get());
+	return Array.isArray(value) ? value : [];
 };
 
 const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.' }) => {
-    const normalized = resolvePostsInput(posts);
+	const normalized = resolvePostsInput(posts);
 
 	return <div theme='posts_section'>
 		<Shown value={normalized.length > 0}>

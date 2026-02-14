@@ -1,4 +1,4 @@
-import { StageContext, suspend, Typography, Button, Icon, } from 'destamatic-ui';
+import { StageContext, suspend, Typography, Button, Icon, Shown } from 'destamatic-ui';
 
 import { modReq } from 'destam-web-core/client';
 
@@ -6,20 +6,14 @@ import NotFound from './NotFound.jsx'
 import Stasis from '../components/Stasis.jsx';
 import AppContext from '../utils/appContext.js';
 import Markdown from '../components/Markdown.jsx';
+import Paper from '../components/Paper.jsx';
+import Tag from '../components/Tag.jsx';
 
 const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, async () => {
 	const post = await modReq('posts/Read', { id: stage.observer.path('urlProps').get().id })
 	if (post.error) return NotFound;
 
 	const user = await modReq('users/Read', { id: post.user });
-
-	const Tag = ({ each }) => {
-		if (!each) return null;
-		const label = `${each}`.charAt(0).toUpperCase() + `${each}`.slice(1);
-		return <div theme='radius_primary' style={{ background: '$color', padding: 10 }}>
-			<Typography type='p1_bold' style={{ color: '$color_background' }} label={label} />
-		</div>;
-	};
 
 	const rebuildTagsFromCharArray = (chars) => {
 		const tokens = [];
@@ -62,29 +56,35 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	const heroImage = post?.images?.[0] ? `/files/${post.images[0].slice(1)}` : null;
 	const normalizedTags = getTagArray(post.tags);
 
-	return <div theme='content_col' style={{ gap: 16 }}>
-		<div theme='fill' style={{ width: '100%' }}>
-			<div style={{
-				position: 'relative',
+	const formatDMY = (ms) => {
+		const d = new Date(ms);
+		const dd = String(d.getDate()).padStart(2, "0");
+		const mm = String(d.getMonth() + 1).padStart(2, "0");
+		const yyyy = d.getFullYear();
+		return `${dd}-${mm}-${yyyy}`;
+	};
+
+	return <div theme='content_col' style={{ gap: 20 }}>
+		<Paper theme='column_fill' style={{ gap: 20 }}>
+			<div theme='fill' style={{
 				height: '100%',
 				overflow: 'hidden',
 				background: heroImage ? `url(${heroImage}) center/cover` : '$color_background',
 				aspectRatio: '1 / 1',
-			}}>
-				<div style={{
-					position: 'absolute',
-					inset: 0,
-					background: 'linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.1))',
-					display: 'flex',
-					alignItems: 'flex-end',
-					padding: '16px 24px',
-				}}>
-					<Typography type='h1' label={post.name} />
+			}} />
+			<Shown value={post.images > 1}>
+				<div theme='row_fill_spread'>
+					<Button icon={<Icon name='feather:chevron-left' />} onClick={() => { }} />
+					<Button icon={<Icon name='feather:chevron-right' />} onClick={() => { }} />
 				</div>
+			</Shown>
+			<Typography type='h1' label={post.name} />
+			<div theme='row_fill_wrap' style={{ gap: 10 }}>
+				<Tag each={normalizedTags} />
 			</div>
-		</div>
+		</Paper>
 
-		<div theme='row_fill_spread' style={{ gap: 12, alignItems: 'center' }}>
+		<div theme='row_fill_spread_wrap'>
 			<Button
 				type='outlined'
 				label={user?.name ? user.name : 'Unknown'}
@@ -92,11 +92,15 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 				icon={<Icon name='feather:user' />}
 				onClick={() => stage.open({ name: 'user', urlProps: { id: post.user } })}
 			/>
+
+			<div theme='column'>
+				<Typography type='p1' label={'Created: ' + formatDMY(post.createdAt)} />
+				<Shown value={post.createdAt != post.modifiedAt}>
+					<Typography type='p1' label={'Modified: ' + formatDMY(post.modifiedAt)} />
+				</Shown>
+			</div>
 		</div>
 		<div theme='divider' />
-		<div theme='row_fill_wrap' style={{ gap: 8 }}>
-			<Tag each={normalizedTags} />
-		</div>
 
 		<Markdown value={post.description} theme='fill' />
 	</div>;
