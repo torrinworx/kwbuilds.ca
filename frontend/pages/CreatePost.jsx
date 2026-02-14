@@ -205,18 +205,19 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	};
 
 	return <ValidateContext value={allValid}>
-		<div theme='content' >
-			<div theme='fill_center' style={{ marginBottom: 60 }}>
-				<Typography type='h1' label='Post about your projects!' />
+		<div theme='content_col' >
+			<div theme='column_fill_center' style={{ textAlign: 'center', marginBottom: 60 }}>
+				<Typography type='h1' label='Post about your project!' />
+				<Typography type='p1' label='Share your project on KWBuilds to show off to the Waterloo Region community.' />
 			</div>
 
-			<div theme='column' style={{ gap: 10 }} >
+			<div theme='column_fill' style={{ gap: 10 }} >
 				<div theme='row_center_fill_spread_wrap'>
 					<Typography type='h2' label='Name' />
 					<div theme='column_tight' style={{ marginTop: 25 }}>
 						<TextField
 							type='contained'
-							placeholder="Alice's Plumbing Services"
+							placeholder="Name"
 							value={name}
 							disabled={disabled}
 						/>
@@ -233,86 +234,86 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 							/>
 							<Typography
 								type='p2'
-								label={name.map(n => `40/${n.length}`)}
+								label={name.map(n => `${n.length}/40`)}
 								style={{ color: name.map(n => n.length > 40 ? '$color_error' : '$color') }}
 							/>
 						</div>
 					</div>
 				</div>
 				<div theme='divider' />
-				<Typography type='p1' label="Give your gig a name! Everyone will see this, no pressure... 😉" />
+				<Typography type='p1' label="Give your post a name! Everyone will see this, no pressure... 😉" />
 			</div>
 
-		<div theme='column' style={{ gap: 10 }} >
-			<Typography type='h2' label='Description' />
-			<div theme='divider' />
-			<Typography type='p1' label='Give your gig a nice and detailed description.' />
+			<div theme='column_fill' style={{ gap: 10 }} >
+				<Typography type='h2' label='Description' />
+				<div theme='divider' />
+				<Typography type='p1' label='Give your post a nice and detailed description, markdown is supported.' />
 
-			<div theme='column_tight' style={{ gap: 12 }}>
-				<div theme='row_wrap' style={{ gap: 12, alignItems: 'center' }}>
-					<div theme='tight_radius_shadow'>
-						<div theme='row_radius_primary_focused_tight' style={{ overflow: 'clip' }}>
-							<Button
-								type={descriptionMode.map(mode => mode === 'edit' ? 'contained' : 'text')}
-								label='Edit'
-								onClick={() => descriptionMode.set('edit')}
-								icon={<Icon name='feather:edit' />}
-								iconPosition='left'
-							/>
-							<Button
-								type={descriptionMode.map(mode => mode === 'preview' ? 'contained' : 'text')}
-								label='Preview'
-								onClick={() => descriptionMode.set('preview')}
-								icon={<Icon name='feather:eye' />}
-								iconPosition='left'
-							/>
+				<div theme='column_tight' style={{ gap: 12 }}>
+					<div theme='row_fill_end' style={{ gap: 12, alignItems: 'center' }}>
+						<div theme='tight_radius_shadow'>
+							<div theme='row_radius_primary_focused_tight' style={{ overflow: 'clip' }}>
+								<Button
+									type={descriptionMode.map(mode => mode === 'edit' ? 'contained' : 'text')}
+									label='Edit'
+									onClick={() => descriptionMode.set('edit')}
+									icon={<Icon name='feather:edit' />}
+									iconPosition='left'
+								/>
+								<Button
+									type={descriptionMode.map(mode => mode === 'preview' ? 'contained' : 'text')}
+									label='Preview'
+									onClick={() => descriptionMode.set('preview')}
+									icon={<Icon name='feather:eye' />}
+									iconPosition='left'
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<Shown value={descriptionMode.map(mode => mode === 'edit')}>
-					<TextArea
-						type='contained'
-						style={{ width: '100%', minHeight: 200 }}
-						placeholder='Description'
-						value={description}
-						maxHeight={500}
-						disabled={disabled}
-					/>
-				</Shown>
+					<Shown value={descriptionMode.map(mode => mode === 'edit')}>
+						<TextArea
+							type='contained'
+							style={{ width: '100%', minHeight: 200 }}
+							placeholder='Description'
+							value={description}
+							maxHeight={500}
+							disabled={disabled}
+						/>
+					</Shown>
 
-				<Shown value={descriptionMode.map(mode => mode === 'preview')}>
-					<Paper style={{ width: '100%', minHeight: 200, padding: 24 }}>
-						<Markdown value={description} />
-					</Paper>
-				</Shown>
+					<Shown value={descriptionMode.map(mode => mode === 'preview')}>
+						<Paper style={{ width: '100%', minHeight: 200, padding: 24 }}>
+							<Markdown value={description} />
+						</Paper>
+					</Shown>
 
-				<div theme='row_fill_end'>
-					<Validate
-						value={description}
-						signal={submit}
-						validate={val => {
-							const v = (val.get() || '').trim();
-							if (!v) return 'Description is required.';
-							if (v.length > 2000) return 'Description must be 2000 characters or less.';
-							return '';
-						}}
-					/>
-					<Typography
-						type='p2'
-						label={description.map(n => `2000/${n.length}`)}
-						style={{ color: description.map(d => d.length > 2000 ? '$color_error' : '$color') }}
-					/>
+					<div theme='row_fill_end'>
+						<Validate
+							value={description}
+							signal={submit}
+							validate={val => {
+								const v = (val.get() || '').trim();
+								if (!v) return 'Description is required.';
+								if (v.length > 2000) return 'Description must be 2000 characters or less.';
+								return '';
+							}}
+						/>
+						<Typography
+							type='p2'
+							label={description.map(n => `${n.length}/2000`)}
+							style={{ color: description.map(d => d.length > 2000 ? '$color_error' : '$color') }}
+						/>
+					</div>
 				</div>
 			</div>
-		</div>
 
-			<div theme='column' style={{ gap: 10 }} >
+			<div theme='column_fill' style={{ gap: 10 }} >
 				<div theme='row_center_fill_spread_wrap'>
 					<Typography type='h2' label='Image' />
 				</div>
 				<div theme='divider' />
-				<Typography type='p1' label='Show off your gig with a nice image!' />
+				<Typography type='p1' label='Show off your post with a couple nice images!' />
 				<FileDrop
 					files={files}
 					extensions={["image/png", "image/jpeg", "image/jpg", "image/webp"]}
@@ -347,7 +348,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-			<div theme='column' style={{ gap: 10 }}>
+			<div theme='column_fill' style={{ gap: 10 }}>
 				<div theme='row_center_fill_spread_wrap'>
 					<Typography type='h2' label='Tags' />
 					<div theme='column_tight' style={{ marginTop: 25 }}>
@@ -389,7 +390,6 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 									<Button
 										type='text'
 										hover={buttonHovered}
-										round
 										icon={<Icon name='feather:plus' style={{
 											color: Observer.all([hovered, buttonHovered])
 												.map(([h, bh]) => h ? "$color" : bh ? "$color" : "$color_background")
@@ -418,7 +418,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 									if (arr.length > 5) return 'Max 5 tags.';
 
 									const cleaned = arr.map(t => (t || '').trim()).filter(Boolean);
-									if (cleaned.length !== arr.length) return 'Tags can’t be empty.';
+									if (cleaned.length !== arr.length) return 'Tags can\'t be empty.';
 
 									const lower = cleaned.map(t => t.toLowerCase());
 									if (new Set(lower).size !== lower.length) return 'Tags must be unique.';
@@ -432,7 +432,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 							<Shown value={tagsLength.map(t => t < 5)}>
 								<Typography
 									type='p2'
-									label={curTag.map(t => `20/${t.length}`)}
+									label={curTag.map(t => `${t.length}/20`)}
 									style={{ color: curTag.map(t => t.length > 20 ? '$color_error' : '$color') }}
 								/>
 							</Shown>
@@ -449,7 +449,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 						<div theme='row_fill_end'>
 							<Typography
 								type='p2'
-								label={tagsLength.map(t => `5/${t}`)}
+								label={tagsLength.map(t => `${t}/5`)}
 								style={{ color: tagsLength.map(t => t > 5 ? '$color_error' : '$color') }}
 							/>
 						</div>
