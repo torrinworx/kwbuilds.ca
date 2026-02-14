@@ -1,124 +1,94 @@
-import { Button, Icon, StageContext, suspend, Typography } from "destamatic-ui";
+import { Button, Icon, StageContext, suspend, Typography, mark, Shown } from "destamatic-ui";
 
 // import SearchBar from '../components/SearchBar.jsx';
 import Stasis from '../components/Stasis.jsx';
+import Posts from '../components/Posts.jsx';
 import AppContext from '../utils/appContext.js';
 
+const FEATURE_CATEGORIES = [
+	{
+		tag: 'startup',
+		title: 'Startup ideas',
+		subtitle: 'Fresh experiments and business pivots from builders.',
+		emptyMessage: 'No startup posts yet. Share your bold idea to spark this feed.',
+	},
+	{
+		tag: 'open source',
+		title: 'Open source',
+		subtitle: 'Community-built tooling, libraries, and experiments.',
+		emptyMessage: 'No open source work has been published yet.',
+	},
+	{
+		tag: 'ai',
+		title: 'AI',
+		subtitle: 'Latest creations leveraging emerging intelligence stacks.',
+		emptyMessage: 'No AI projects yet. Be the first to share a trained model or demo.',
+	},
+	{
+		tag: 'hardware',
+		title: 'Hardware',
+		subtitle: 'Physical builds, prototypes, and cyber-physical mashups.',
+		emptyMessage: 'No hardware builds have been shared yet.',
+	},
+	{
+		tag: 'hacking',
+		title: 'Hacking',
+		subtitle: 'Playful, experimental, and curiosity-driven builds.',
+		emptyMessage: 'No hacking posts yet. Drop a mad scientist project to kick this off.',
+	},
+];
+
+const ROW_LIMIT = 8;
+
 const Home = AppContext.use(app => StageContext.use(s => suspend(Stasis, async () => {
-	let posts = [];
-	let fetchError = '';
-
-	try {
-		const result = await app.modReq('home/Posts', { limit: 12 });
-		if (Array.isArray(result)) {
-			posts = result;
-		} else if (result?.error) {
-			fetchError = result.error;
-		} else {
-			fetchError = 'Unexpected response from posts module';
+	const rows = await Promise.all(FEATURE_CATEGORIES.map(async (row) => {
+		try {
+			const result = await app.modReq('home/Posts', { limit: ROW_LIMIT, tags: [row.tag] });
+			console.log(result);
+			if (!Array.isArray(result)) {
+				return { ...row, posts: [], error: result?.error || 'Unexpected response from posts module' };
+			}
+			return { ...row, posts: result, error: '' };
+		} catch (error) {
+			return { ...row, posts: [], error: error?.message || 'Failed to load posts' };
 		}
-	} catch (error) {
-		fetchError = error?.message || 'Failed to load posts';
-	}
+	}));
 
-	const TagChip = ({ each: tag }) => {
-		return tag ? <div
-			theme='row_center'
-			style={{
-				padding: '4px 12px',
-				borderRadius: 999,
-				background: '$color',
-				color: '$color_background',
-				fontSize: 12,
-			}}
-		>
-			<Typography type='p2' label={tag} style={{ color: '$color_background' }} />
-		</div> : null;
-	};
+	const PostRow = ({ each }) => <>
+		<div theme='content_column_fill' style={{ alignText: 'left' }}>
+			<Typography type='h2' label={each.title} />
+			<Typography type='p1' label={each.subtitle} />
 
-	const PostCard = ({ each: post }) => {
-		const rawImage = Array.isArray(post.images) ? post.images[0] : null;
-		const imagePath = rawImage && rawImage.startsWith('/') ? rawImage.slice(1) : rawImage;
-		const imageUrl = imagePath ? `/files/${imagePath.slice(1)}` : null;
+		</div>
 
-		const excerpt = (post.description || '').trim().slice(0, 150);
-		const summary = excerpt.length === (post.description || '').trim().length
-			? excerpt
-			: `${excerpt}…`;
-
-		const goToPost = () => {
-			s.open({ name: 'post', urlProps: { id: post.id } });
-		};
-
-		return <div
-			theme='column_fill_contentContainer'
-			style={{
-				gap: 12,
-				padding: 20,
-				background: 'linear-gradient(160deg, #fefefe, #eef5ff)',
-				boxShadow: '0 12px 32px rgba(0,0,0,0.08)',
-				borderRadius: 24,
-				cursor: 'pointer',
-				minHeight: 320,
-			}}
-			onClick={goToPost}
-		>
-			<div
-				style={{
-					height: 180,
-					borderRadius: 16,
-					background: imageUrl
-						? `linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url(${imageUrl}) center/cover`
-						: 'linear-gradient(135deg, #ffe2e2, #ffd4ae)',
-					backgroundBlendMode: imageUrl ? 'overlay' : 'normal',
-				}} />
-			<Typography type='h3' label={post.name || 'Untitled project'} />
-			<Typography type='p1' label={summary || post.description || 'No description yet'} style={{ color: '$color_text_subtle' }} />
-			<div theme='row_fill_wrap' style={{ gap: 6 }}>
-				<TagChip each={Array.isArray(post.tags) ? post.tags : []} />
-			</div>
-		</div>;
-	};
+		<Shown value={each.error} >
+			<mark:then>
+				<Typography type='h2' label={`Failed to load ${each.title.toLowerCase()}: ${each.error}`} />
+			</mark:then>
+			<mark:else>
+				<Posts posts={each.posts} />
+			</mark:else>
+		</Shown>
+	</>;
 
 	return <>
-		<div theme='column_fill_contentContainer' style={{ gap: 24 }}>
-			<div theme='row_fill_center_wrap_contentContainer' style={{ gap: 16, justifyContent: 'space-between' }}>
-				<div>
-					<Typography type='h1' label='Project spotlight' />
-					<Typography type='p1' label='Browse live builds, ideas, and gigs shared by the community.' style={{ color: '$color_text_subtle', marginTop: 4 }} />
-				</div>
-				<Button
-					title='Create a Gig'
-					label='Create'
-					iconPosition='right'
-					type='outlined'
-					onClick={() => {
-						s.open({ name: 'create-post' });
-					}}
-					icon={<Icon name='feather:plus' />}
-				/>
+		<div theme='content_col'>
+			<div theme='column'>
+				<Typography type='h1' label='Project spotlight' />
+				<Typography type='p1' label='Browse live builds, open source projects, and ideas shared by the community.' style={{ color: '$color_text_subtle', marginTop: 4 }} />
 			</div>
-			{fetchError ? <Typography type='validate' label={`Posts failed to load: ${fetchError}`} style={{ color: '$color_error' }} /> : null}
-			{posts.length === 0 ? <div
-				theme='column_center'
-				style={{
-					minHeight: 220,
-					background: 'linear-gradient(120deg, #ffffff, #f5f6ff)',
-					borderRadius: 20,
-					padding: 24,
-					gap: 12,
+			<Button
+				title='Share what your working on'
+				label='Create Post'
+				iconPosition='right'
+				type='outlined'
+				onClick={() => {
+					s.open({ name: 'create-post' });
 				}}
-			>
-					<Typography type='h2' label='No posts yet' />
-					<Typography type='p1' label='Once someone shares a project it will appear here. Want to be the first? Hit Create.' style={{ color: '$color_text_subtle', textAlign: 'center' }} />
-			</div> : <div style={{
-					display: 'grid',
-					gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-					gap: 20,
-				}}>
-					<PostCard each={posts} />
-				</div>}
+				icon={<Icon name='feather:plus' />}
+			/>
 		</div>
+		<PostRow each={rows} />
 	</>;
 })));
 
