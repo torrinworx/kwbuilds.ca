@@ -3,7 +3,7 @@ import Paper from '../components/Paper.jsx';
 
 Theme.define({
 	landingCards: {
-		gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+		gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
 		display: 'grid',
 		gap: 20,
 	},
@@ -16,166 +16,229 @@ Theme.define({
 	},
 });
 
-const size = 'clamp(1.45rem, 1.8rem + 1.1vw, 4rem)'
-const size2 = 'clamp(1.45rem, 1.2rem + 1.1vw, 2rem)'
+const size = 'clamp(1.45rem, 1.8rem + 1.1vw, 4rem)';
+const size2 = 'clamp(1.45rem, 1.2rem + 1.1vw, 2rem)';
 
-const Landing = StageContext.use(s => () => <>
-	<div theme='column_fill_contentContainer'>
-		<div theme='column_fill_center' style={{ gap: 40, margin: '80px 0' }}>
-			<Typography label='A transparent gig platform.' type="h1_bold" style={{ textAlign: 'center', fontSize: 'clamp(2.4rem, 1.8rem + 2.6vw, 5rem)', }} />
-			<Typography label='OpenGig is an open and fair gig platform where anyone can hire or work.' type="h2" style={{ textAlign: 'center' }} />
-			<div theme='row_fill_center_wrap' style={{ gap: 20 }}>
-				<Button
-					label={<Typography type='h2' style={{ color: 'inherit' }} label='Sign Up' />}
-					type="contained"
-					style={{ borderRadius: 50, marginTop: '20px', padding: 20 }}
-					iconPosition='right'
-					onClick={() => s.open({ name: 'auth' })}
-					icon={<Icon size={size} name='feather:user' />}
+const Landing = StageContext.use(s => () => (
+	<>
+		<div theme="column_fill_contentContainer">
+			{/* HERO */}
+			<div theme="column_fill_center" style={{ gap: 40, margin: '80px 0' }}>
+				<Typography
+					label="KWBuilds — build in public, locally."
+					type="h1_bold"
+					style={{
+						textAlign: 'center',
+						fontSize: 'clamp(2.4rem, 1.8rem + 2.6vw, 5rem)',
+					}}
 				/>
-				<Button
-					label={<Typography type='h2' style={{ color: 'inherit' }} label='Browse' />}
-					type="outlined"
-					style={{ borderRadius: 50, marginTop: '20px', padding: 20 }}
-					iconPosition='right'
-					onClick={() => s.open({ name: 'home' })}
-					icon={<Icon size={size} name='feather:globe' />}
+				<Typography
+					label="A community index of projects being built in Kitchener–Waterloo — startups, side projects, open source, hobbies, and experiments."
+					type="h2"
+					style={{ textAlign: 'center' }}
 				/>
+
+				{/* Keep these buttons/layout the same */}
+				<div theme="row_fill_center_wrap" style={{ gap: 20 }}>
+					<Button
+						label={<Typography type="h2" style={{ color: 'inherit' }} label="Sign Up" />}
+						type="contained"
+						style={{ marginTop: '20px', padding: 20 }}
+						iconPosition="right"
+						onClick={() => s.open({ name: 'auth' })}
+						icon={<Icon size={size} name="feather:user" />}
+					/>
+					<Button
+						label={<Typography type="h2" style={{ color: 'inherit' }} label="Browse" />}
+						type="outlined"
+						style={{ marginTop: '20px', padding: 20 }}
+						iconPosition="right"
+						onClick={() => s.open({ name: 'home' })}
+						icon={<Icon size={size} name="feather:globe" />}
+					/>
+				</div>
+			</div>
+
+			{/* INTRO */}
+			<Typography type="h2" label="Made for collaboration, not clout." />
+			<div theme="divider" />
+			<Typography
+				type="p1"
+				label="KWBuilds is a lightweight place to share what you’re building and find people to build with. Not a job board. Not a pitch board. Just projects, progress, and ways to help."
+			/>
+
+			{/* CARDS */}
+			<div theme="landingCards">
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="h2_bold" label="FOR BUILDERS" />
+						<Icon size={size} name="feather:tool" />
+					</div>
+					<Typography type="p1_bold" label="Share your project" />
+					<Typography
+						type="p1"
+						label="Post a short description, links, and what kind of help you’re looking for — from design to code to feedback."
+					/>
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="h2_bold" label="FOR COLLABORATORS" />
+						<Icon size={size} name="feather:users" />
+					</div>
+					<Typography type="p1_bold" label="Find something to join" />
+					<Typography
+						type="p1"
+						label="Browse by tags and “looking for help”. Jump in, contribute, learn, and meet people locally."
+					/>
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="h2_bold" label="FOR THE COMMUNITY" />
+						<Icon size={size} name="feather:map-pin" />
+					</div>
+					<Typography type="p1_bold" label="Local discovery layer" />
+					<Typography
+						type="p1"
+						label="See what’s being built in KW across startups, companies, and side projects — without the noise of global feeds."
+					/>
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="h2_bold" label="IN PERSON" />
+						<Icon size={size} name="feather:coffee" />
+					</div>
+					<Typography type="p1_bold" label="Meetups around projects" />
+					<Typography
+						type="p1"
+						label="Projects can organize coffee chats, build nights, demos, or coworking sessions to turn online interest into real momentum."
+					/>
+				</Paper>
+			</div>
+
+			{/* EXPECT */}
+			<Paper>
+				<Typography type="p1_bold" label="What you can do on KWBuilds" />
+				<ul theme="landingList">
+					<li>
+						<Typography type="p1" label={<>Post a project with a 1‑liner, links, and tags.</>} />
+					</li>
+					<li>
+						<Typography type="p1" label={<>Mark what help you’re looking for (or offer help).</>} />
+					</li>
+					<li>
+						<Typography type="p1" label={<>Join via a direct link (Discord/Slack/email/GitHub).</>} />
+					</li>
+					<li>
+						<Typography type="p1" label={<>Find local meetups and build nights tied to real projects.</>} />
+					</li>
+				</ul>
+			</Paper>
+
+			{/* HOW IT WORKS */}
+			<Typography type="h2" label="How it works" />
+			<div theme="landing_divider" />
+
+			<div theme="column_fill" style={{ gap: 20 }}>
+				<Paper>
+					<Typography type="h2_bold" label="1. POST" />
+					<Typography type="p1_bold" label="Share what you’re building" />
+					<Typography
+						type="p1"
+						label="Add a quick overview, tags, links, and what you need help with (or what you’re offering)."
+					/>
+				</Paper>
+
+				<Paper>
+					<Typography type="h2_bold" label="2. CONNECT" />
+					<Typography type="p1_bold" label="Collaborate directly" />
+					<Typography
+						type="p1"
+						label="People reach out through your preferred link (Discord/Slack/GitHub/email). No weird gatekeeping."
+					/>
+				</Paper>
+
+				<Paper>
+					<Typography type="h2_bold" label="3. MEET" />
+					<Typography type="p1_bold" label="Turn online into in-person" />
+					<Typography
+						type="p1"
+						label="Host a coffee chat, build night, or demo meetup to keep the momentum going locally."
+					/>
+				</Paper>
+			</div>
+
+			{/* PRINCIPLES */}
+			<Typography type="h2" label="Principles" />
+			<div theme="landing_divider" />
+
+			<div theme="landingCards">
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="p1_bold" label="Local-first" />
+						<Icon size={size2} name="feather:map-pin" />
+					</div>
+					<Typography type="p1" label="Built for the KW community — discover what’s near you." />
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="p1_bold" label="Collaboration-first" />
+						<Icon size={size2} name="feather:users" />
+					</div>
+					<Typography type="p1" label="Make it easy to join, help, and contribute." />
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="p1_bold" label="Signal over noise" />
+						<Icon size={size2} name="feather:filter" />
+					</div>
+					<Typography type="p1" label="Simple pages, clear tags, and real progress — not feed doomscrolling." />
+				</Paper>
+
+				<Paper>
+					<div theme="row_spread">
+						<Typography type="p1_bold" label="Community-led" />
+						<Icon size={size2} name="feather:heart" />
+					</div>
+					<Typography type="p1" label="Built with the community — feedback shapes what gets shipped." />
+				</Paper>
+			</div>
+
+			{/* CTA */}
+			<div theme="column_fill_center" style={{ gap: 40, margin: '80px 0' }}>
+				<Typography type="h1_bold" label="Join KWBuilds" />
+				<Typography
+					type="h2"
+					style={{ textAlign: 'center' }}
+					label="KWBuilds is early. If you join now, you’ll help shape the simplest possible way for KW to share and collaborate on real projects."
+				/>
+
+				{/* Keep these buttons/layout the same */}
+				<div theme="row_fill_center_wrap" style={{ gap: 20 }}>
+					<Button
+						label={<Typography type="h2" style={{ color: 'inherit' }} label="Sign Up" />}
+						type="contained"
+						style={{ marginTop: '20px', padding: 20 }}
+						iconPosition="right"
+						onClick={() => s.open({ name: 'auth' })}
+						icon={<Icon size={size} name="feather:user" />}
+					/>
+					<Button
+						label={<Typography type="h2" style={{ color: 'inherit' }} label="Browse" />}
+						type="outlined"
+						style={{ marginTop: '20px', padding: 20 }}
+						iconPosition="right"
+						onClick={() => s.open({ name: 'home' })}
+						icon={<Icon size={size} name="feather:globe" />}
+					/>
+				</div>
 			</div>
 		</div>
-
-		<Typography type="h2" label="Built for fair work and clear pricing." />
-		<div theme="divider" />
-		<Typography type="p1" label="OpenGig is designed to be simple, transparent, and community-aligned. No surprises, no confusion — just a clean place to hire or work." />
-
-		<div theme="landingCards">
-			<Paper>
-				<div theme="row_spread">
-					<Typography type='h2_bold' label="FOR WORKERS" />
-					<Icon size={size} name="feather:tool" />
-				</div>
-				<Typography type="p1_bold" label="Own your rates" />
-				<Typography type="p1" label="Set pricing that makes sense for you. Keep control over your work and your payouts." />
-			</Paper>
-
-			<Paper>
-				<div theme="row_spread">
-					<Typography type='h2_bold' label="FOR CUSTOMERS" />
-					<Icon size={size} name="feather:shopping-bag" />
-				</div>
-				<Typography type="p1_bold" label="Transparent costs" />
-				<Typography type="p1" label="Know what you're paying for. Clear pricing, and a platform built around trust." />
-			</Paper>
-
-			<Paper>
-				<div theme="row_spread">
-					<Typography type='h2_bold' label="COOPERATIVE" />
-					<Icon size={size} name="feather:users" />
-				</div>
-				<Typography type="p1_bold" label="Community-led" />
-				<Typography type="p1" label="We're building toward member-driven governance — users help shape priorities and policies." />
-			</Paper>
-
-			<Paper>
-				<div theme="row_spread">
-					<Typography type='h2_bold' label="OPEN SOURCE" />
-					<Icon size={size} name="feather:code" />
-				</div>
-				<Typography type="p1_bold" label="Auditable platform" />
-				<Typography type="p1" label="The core code is public. Transparency isn't a slogan — it's a design constraint." />
-			</Paper>
-		</div>
-
-		<Paper>
-			<Typography type="p1_bold" label="What you can expect" />
-			<ul theme="landingList">
-				<li><Typography type="p1" label={<>Workers set their own rates and terms.</>} /></li>
-				<li><Typography type="p1" label={<>Customers get clear, upfront pricing.</>} /></li>
-				<li><Typography type="p1" label={<>A platform built to be transparent and community-aligned.</>} /></li>
-			</ul>
-		</Paper>
-
-		<Typography type="h2" label="How it works" />
-		<div theme="landing_divider" />
-
-		<div theme='column_fill' style={{ gap: 20 }}>
-			<Paper>
-				<Typography type='h2_bold' label="1. CREATE" />
-				<Typography type="p1_bold" label="Post a gig or offer a service" />
-				<Typography type="p1" label="Describe the work, set expectations, and add tags so people can find it." />
-			</Paper>
-
-			<Paper>
-				<Typography type='h2_bold' label="2. CONNECT" />
-				<Typography type="p1_bold" label="Get requests or apply" />
-				<Typography type="p1" label="Workers and customers connect directly — no hidden rules or confusing payouts." />
-			</Paper>
-
-			<Paper>
-				<Typography type='h2_bold' label="3. BUILD TRUST" />
-				<Typography type="p1_bold" label="Grow a repeat relationship" />
-				<Typography type="p1" label="The goal is long term local trust, not one-off anonymous churn." />
-			</Paper>
-		</div>
-
-		<Typography type="h2" label="Principles" />
-		<div theme="landing_divider" />
-
-		<div theme="landingCards">
-			<Paper>
-				<div theme='row_spread'>
-					<Typography type="p1_bold" label="Open Source" />
-					<Icon size={size2} name="feather:code" />
-				</div>
-				<Typography type="p1" label="Core code is public and reviewable." />
-			</Paper>
-			<Paper>
-				<div theme='row_spread'>
-					<Typography type="p1_bold" label="Open Statistics" />
-					<Icon size={size2} name="feather:bar-chart" />
-				</div>
-				<Typography type="p1" label="Platform usage and costs should be visible and understandable." />
-			</Paper>
-			<Paper>
-				<div theme='row_spread'>
-					<Typography type="p1_bold" label="Open Structure" />
-					<Icon size={size2} name="feather:grid" />
-				</div>
-				<Typography type="p1" label="Designed toward member-driven governance and accountability." />
-			</Paper>
-			<Paper>
-				<div theme='row_spread'>
-					<Typography type="p1_bold" label="Open Cost" />
-					<Icon size={size2} name="feather:dollar-sign" />
-				</div>
-				<Typography type="p1" label="Work toward at-cost operation: sustainable, fair, and transparent." />
-			</Paper>
-		</div>
-
-		<div theme='column_fill_center' style={{ gap: 40, margin: '80px 0' }}>
-			<Typography type="h1_bold" label="Join OpenGig" />
-			<Typography type="h2" style={{ textAlign: 'center' }} label={`OpenGig is still being built. If you join now, you're helping shape what “fair” looks like in practice.`} />
-
-			<div theme='row_fill_center_wrap' style={{ gap: 20 }}>
-				<Button
-					label={<Typography type='h2' style={{ color: 'inherit' }} label='Sign Up' />}
-					type="contained"
-					style={{ borderRadius: 50, marginTop: '20px', padding: 20 }}
-					iconPosition='right'
-					onClick={() => s.open({ name: 'auth' })}
-					icon={<Icon size={size} name='feather:user' />}
-				/>
-				<Button
-					label={<Typography type='h2' style={{ color: 'inherit' }} label='Browse' />}
-					type="outlined"
-					style={{ borderRadius: 50, marginTop: '20px', padding: 20 }}
-					iconPosition='right'
-					onClick={() => s.open({ name: 'home' })}
-					icon={<Icon size={size} name='feather:globe' />}
-				/>
-			</div>
-		</div>
-	</div>
-</>);
+	</>
+));
 
 export default Landing;
