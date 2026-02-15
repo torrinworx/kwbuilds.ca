@@ -100,43 +100,43 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			return Observer.immutable(normalizeOtherProfile(data));
 		});
 
-	const profileObs = activeProfileRefObs.unwrap();
-	const profilePosts = Observer.mutable([]);
-	const postsLoading = Observer.mutable(false);
-	const postsError = Observer.mutable('');
-	const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs]).map(([viewed, self]) =>
-		normalizeUuid(viewed) ?? normalizeUuid(self)
-	);
-	let postsRequestVersion = 0;
+		const profileObs = activeProfileRefObs.unwrap();
+		const profilePosts = Observer.mutable([]);
+		const postsLoading = Observer.mutable(false);
+		const postsError = Observer.mutable('');
+		const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs]).map(([viewed, self]) =>
+			normalizeUuid(viewed) ?? normalizeUuid(self)
+		);
+		let postsRequestVersion = 0;
 
-	profileUserIdObs.effect(() => {
-		const id = profileUserIdObs.get();
-		const version = ++postsRequestVersion;
-		if (!id) {
-			profilePosts.set([]);
-			postsLoading.set(false);
-			postsError.set('');
-			return;
-		}
-
-		postsLoading.set(true);
-		postsError.set('');
-
-		(async () => {
-			try {
-				const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
-				if (version !== postsRequestVersion) return;
-				profilePosts.set(Array.isArray(payload) ? payload : []);
-			} catch (err) {
-				if (version !== postsRequestVersion) return;
-				postsError.set(err?.message || 'Failed to load posts.');
+		profileUserIdObs.effect(() => {
+			const id = profileUserIdObs.get();
+			const version = ++postsRequestVersion;
+			if (!id) {
 				profilePosts.set([]);
-			} finally {
-				if (version !== postsRequestVersion) return;
 				postsLoading.set(false);
+				postsError.set('');
+				return;
 			}
-		})();
-	});
+
+			postsLoading.set(true);
+			postsError.set('');
+
+			(async () => {
+				try {
+					const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
+					if (version !== postsRequestVersion) return;
+					profilePosts.set(Array.isArray(payload) ? payload : []);
+				} catch (err) {
+					if (version !== postsRequestVersion) return;
+					postsError.set(err?.message || 'Failed to load posts.');
+					profilePosts.set([]);
+				} finally {
+					if (version !== postsRequestVersion) return;
+					postsLoading.set(false);
+				}
+			})();
+		});
 
 		const canEditObs = Observer.all([wsAuthed, viewedUuidObs, selfUuidObs]).map(([authed, viewedUuid, selfUuid]) => {
 			if (!authed) return false;
@@ -203,7 +203,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 										title="Upload new profile image."
 										type="contained"
 										icon={<Icon name="feather:edit" />}
-										round
 										disabled={disabled}
 										loading={false}
 										onClick={() => { error.set(''); }}
@@ -262,26 +261,26 @@ const User = AppContext.use(app => StageContext.use(stage =>
 						<Typography type="h2" label={Observer.immutable(nameObs)} />
 					</Shown>
 
-				<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
-				<div theme="divider" />
-			</div>
+					<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
+					<div theme="divider" />
+				</div>
 
-			<div theme="content_col" style={{ gap: 12, width: '100%' }}>
-				<Shown value={postsLoading}>
-					<div theme="row" style={{ justifyContent: 'center', padding: '6px 0' }}>
-						<LoadingDots />
-					</div>
-				</Shown>
+				<div theme="content_col" style={{ gap: 12, width: '100%' }}>
+					<Shown value={postsLoading}>
+						<div theme="row" style={{ justifyContent: 'center', padding: '6px 0' }}>
+							<LoadingDots />
+						</div>
+					</Shown>
 
-				<Shown value={postsError.map(val => !!val)}>
-					<Typography type="validate" label={postsError} />
-				</Shown>
+					<Shown value={postsError.map(val => !!val)}>
+						<Typography type="validate" label={postsError} />
+					</Shown>
 
-				<Posts
-					posts={profilePosts}
-					emptyMessage="No posts yet. Share your next build."
-				/>
-			</div>
+					<Posts
+						posts={profilePosts}
+						emptyMessage="No posts yet. Share your next build."
+					/>
+				</div>
 			</>;
 		}).unwrap()
 	})
