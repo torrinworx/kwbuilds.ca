@@ -107,7 +107,7 @@ Theme.define({
 const PostTile = StageContext.use(stage => ({ each: post }) => {
 	const hovered = Observer.mutable(false);
 	const rawImage = Array.isArray(post?.images) ? post.images[0] : null;
-	const imageUrl = `/files/${rawImage.slice(1)}`;
+	const imageUrl = rawImage ? `/files/${rawImage.slice(1)}` : null;
 	const tags = Array.isArray(post?.tags) ? post.tags : [];
 
 	const handleClick = () => {
@@ -142,20 +142,13 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 	</Button>;
 });
 
-const resolvePostsInput = (value) => {
-	if (!value) return [];
-	if (typeof value?.get === 'function') return resolvePostsInput(value.get());
-	return Array.isArray(value) ? value : [];
-};
-
 const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.' }) => {
-	const normalized = resolvePostsInput(posts);
 
 	return <div theme='posts_section'>
-		<Shown value={normalized.length > 0}>
+		<Shown value={[posts].length > 0}>
 			<mark:then>
 				<div theme='posts_grid'>
-					<PostTile each={normalized} />
+					<PostTile each={posts} />
 				</div>
 			</mark:then>
 			<mark:else>

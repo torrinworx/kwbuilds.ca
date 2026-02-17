@@ -58,7 +58,7 @@ const normalizeUuid = (value) =>
 	(typeof value === 'string' && value.trim() ? value.trim() : null);
 
 const User = AppContext.use(app => StageContext.use(stage =>
-	suspend(Stasis, async () => {
+	suspend(Stasis, async (props) => {
 		const disabled = Observer.mutable(false);
 		const error = Observer.mutable('');
 
@@ -66,9 +66,18 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			.path(['sync', 'state', 'profile', 'id'])
 			.def(null);
 
-		const viewedUuidObs =
-			stage.observer?.path(['urlProps', 'id'])?.def(null)
-			?? Observer.mutable(stage.urlProps?.id ?? null);
+		const urlPropsObs =
+			stage.observer?.path('urlProps')?.def({})
+			?? Observer.immutable(stage.urlProps ?? {});
+
+		const initialViewedUuid =
+			normalizeUuid(props?.id)
+			?? normalizeUuid(stage.urlProps?.id)
+			?? null;
+
+		const viewedUuidObs = urlPropsObs.map(urlProps =>
+			normalizeUuid(urlProps?.id) ?? initialViewedUuid
+		);
 
 		const selfProfilePathObs = app.observer
 			.path(['sync', 'state', 'profile'])
@@ -80,7 +89,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			error.set('');
 
 			if (!authed && !viewedUuid) return Observer.immutable(null);
-
 			const isSelf =
 				authed && (
 					!viewedUuid ||
@@ -101,40 +109,22 @@ const User = AppContext.use(app => StageContext.use(stage =>
 		});
 
 		const profileObs = activeProfileRefObs.unwrap();
-		const profilePosts = Observer.mutable([]);
-		const postsLoading = Observer.mutable(false);
-		const postsError = Observer.mutable('');
+		const profilePosts = OArray([]);
 		const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs]).map(([viewed, self]) =>
 			normalizeUuid(viewed) ?? normalizeUuid(self)
 		);
-		let postsRequestVersion = 0;
 
 		profileUserIdObs.effect(() => {
 			const id = profileUserIdObs.get();
-			const version = ++postsRequestVersion;
+
 			if (!id) {
-				profilePosts.set([]);
-				postsLoading.set(false);
-				postsError.set('');
+				profilePosts.splice(0, profilePosts.length);
 				return;
 			}
-
-			postsLoading.set(true);
-			postsError.set('');
-
 			(async () => {
-				try {
-					const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
-					if (version !== postsRequestVersion) return;
-					profilePosts.set(Array.isArray(payload) ? payload : []);
-				} catch (err) {
-					if (version !== postsRequestVersion) return;
-					postsError.set(err?.message || 'Failed to load posts.');
-					profilePosts.set([]);
-				} finally {
-					if (version !== postsRequestVersion) return;
-					postsLoading.set(false);
-				}
+				const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
+				// profilePosts.set(Array.isArray(payload) ? payload : []);
+				profilePosts.splice(0, profilePosts.length, ...payload);
 			})();
 		});
 
@@ -266,16 +256,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				</div>
 
 				<div theme="content_col" style={{ gap: 12, width: '100%' }}>
-					<Shown value={postsLoading}>
-						<div theme="row" style={{ justifyContent: 'center', padding: '6px 0' }}>
-							<LoadingDots />
-						</div>
-					</Shown>
-
-					<Shown value={postsError.map(val => !!val)}>
-						<Typography type="validate" label={postsError} />
-					</Shown>
-
 					<Posts
 						posts={profilePosts}
 						emptyMessage="No posts yet. Share your next build."
