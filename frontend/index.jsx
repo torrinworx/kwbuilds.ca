@@ -19,6 +19,7 @@ import { themeSetup, theme } from './utils/theme.js';
 import AppContext from './utils/appContext.js';
 
 import Stasis from './components/Stasis.jsx';
+import Header from './components/Header.jsx';
 
 import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -163,7 +164,7 @@ const App = () => <AppContext value={appContext}>
 									flex: 1,
 								}}
 							>
-								{/* <Header /> */}
+								<Header />
 								<Stage />
 								{/* <div style={{ marginTop: 'auto' }}>
 									<Footer />
