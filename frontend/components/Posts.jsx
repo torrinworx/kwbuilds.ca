@@ -4,9 +4,9 @@ import { StageContext, Theme, Typography, Button, Shown } from 'destamatic-ui';
 import Paper from './Paper.jsx';
 import Tag from './Tag.jsx';
 
-Theme.define({
-	posts_section: {
-		display: 'flex',
+	Theme.define({
+		posts_section: {
+			display: 'flex',
 		flexDirection: 'column',
 		gap: 10,
 		padding: 0,
@@ -19,16 +19,24 @@ Theme.define({
 		gap: 6,
 	},
 
-	posts_grid: {
-		display: 'grid',
-		gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 320px))',
-		gap: 18,
-		justifyContent: 'flex-start',
-		width: '100%',
-		paddingBottom: 6,
-		paddingRight: 6,
-		overflow: 'visible',
-	},
+		posts_grid_fill: {
+			display: 'flex',
+			justifyContent: 'center',
+			width: '100%',
+			padding: 0,
+		},
+
+		posts_grid: {
+			display: 'grid',
+			gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 320px))',
+			gap: 18,
+			justifyContent: 'center',
+			width: '100%',
+			paddingBottom: 6,
+			paddingRight: 6,
+			overflow: 'visible',
+			alignContent: 'start',
+		},
 
 	posts_card: {
 		extends: 'radius_primary',
@@ -144,11 +152,13 @@ const PostTile = StageContext.use(stage => ({ each: post }) => {
 
 const Posts = StageContext.use(() => ({ posts, emptyMessage = 'Posts not found.' }) => {
 
-	return <div theme='posts_section'>
+	return <div theme='fill_center'>
 		<Shown value={[posts].length > 0}>
 			<mark:then>
-				<div theme='posts_grid'>
-					<PostTile each={posts} />
+				<div theme='posts_grid_fill'>
+					<div theme='posts_grid'>
+						<PostTile each={posts} />
+					</div>
 				</div>
 			</mark:then>
 			<mark:else>
