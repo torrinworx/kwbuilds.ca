@@ -255,12 +255,10 @@ const User = AppContext.use(app => StageContext.use(stage =>
 					<div theme="divider" />
 				</div>
 
-				<div theme="content_col" style={{ gap: 12, width: '100%' }}>
-					<Posts
-						posts={profilePosts}
-						emptyMessage="No posts yet. Share your next build."
-					/>
-				</div>
+				<Posts
+					posts={profilePosts}
+					emptyMessage="No posts yet. Share your next build."
+				/>
 			</>;
 		}).unwrap()
 	})
