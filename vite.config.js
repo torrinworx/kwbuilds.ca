@@ -66,6 +66,7 @@ export default defineConfig({
 	build: {
 		target: 'esnext',
 		outDir: '../build/dist',
+		emptyOutDir: true,
 		rollupOptions: {
 			output: {
 				entryFileNames: '[name].js',
