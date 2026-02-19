@@ -9,11 +9,11 @@ rm -rf "$BUILD_DIR"
 rm -f "$ZIP_FILE"
 
 # Frontend builds
-vite build
-vite build --config vite.config.ssg.js
+npm run build:web
+# vite build --config vite.config.ssg.js
 
 # SSG step
-node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://opengig.org
+# node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://opengig.org
 
 # Server
 cp -R ./backend "$BUILD_DIR/backend"
