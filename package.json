@@ -34,7 +34,6 @@
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.7",
 		"destam": "^0.8.0",
-		"destam-db": "file:destam-web-core/db",
 		"destam-dom": "^0.14.4",
 		"destam-web-core": "file:destam-web-core",
 		"express": "^5.2.1",
