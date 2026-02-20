@@ -1,3 +1,6 @@
 [submodule "destamatic-ui"]
 	path = destamatic-ui
 	url = git@github.com:torrinworx/destamatic-ui.git
+[submodule "destamatic-forge"]
+	path = destamatic-forge
+	url = https://github.com/torrinworx/destamatic-forge.git
