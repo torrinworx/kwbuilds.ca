@@ -17,7 +17,7 @@ npm run build:web
 
 # Server
 cp -R ./backend "$BUILD_DIR/backend"
-cp -R ./destam-web-core "$BUILD_DIR/destam-web-core"
+cp -R ./destamatic-forge "$BUILD_DIR/destamatic-forge"
 cp ./package.json "$BUILD_DIR/package.json"
 cp ./package-lock.json "$BUILD_DIR/package-lock.json"
 

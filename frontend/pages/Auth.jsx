@@ -10,7 +10,7 @@ import {
 	ValidateContext,
 } from 'destamatic-ui';
 
-import { syncState } from 'destam-web-core/client';
+import { syncState } from '@destamatic/forge/client';
 
 import Stasis from '../components/Stasis.jsx';
 

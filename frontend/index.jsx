@@ -12,7 +12,7 @@ import {
 	Meta,
 } from 'destamatic-ui';
 import IconifyIcons from "destamatic-ui/components/icons/IconifyIcons/IconifyIcons";
-import { syncState } from 'destam-web-core/client';
+import { syncState } from '@destamatic/forge/client';
 
 import fonts from './utils/fonts.js';
 import { themeSetup, theme } from './utils/theme.js';
@@ -28,6 +28,8 @@ import Home from './pages/Home.jsx';
 import CreatePost from './pages/CreatePost.jsx';
 import Post from './pages/Post.jsx';
 import User from './pages/User.jsx';
+
+console.log("WHYYYY")
 
 let appContext;
 appContext = await syncState();

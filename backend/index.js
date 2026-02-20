@@ -2,9 +2,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
 
-import { core } from "destam-web-core/server";
+import { core } from "@destamatic/forge/server";
 
-import server from 'destam-web-core/server/servers/express.js';
+import server from '@destamatic/forge/server/servers/express.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

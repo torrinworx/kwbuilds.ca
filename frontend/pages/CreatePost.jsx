@@ -14,7 +14,7 @@ import {
 	FileDrop,
 	ThemeContext,
 } from "destamatic-ui";
-import { modReq } from 'destam-web-core/client';
+import { modReq } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';
 import Markdown from '../components/Markdown.jsx';

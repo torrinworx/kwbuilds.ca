@@ -12,8 +12,8 @@ import {
 	Button,
 	TextField,
 } from 'destamatic-ui';
-import { wsAuthed, modReq } from 'destam-web-core/client';
-import { asyncSwitch } from 'destam-web-core';
+import { wsAuthed, modReq } from '@destamatic/forge/client';
+import { asyncSwitch } from '@destamatic/forge';
 
 import NotFound from './NotFound.jsx';
 import Stasis from '../components/Stasis.jsx';

@@ -1,6 +1,6 @@
 import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from 'destamatic-ui';
 
-import { modReq } from 'destam-web-core/client';
+import { modReq } from '@destamatic/forge/client';
 
 import NotFound from './NotFound.jsx'
 import Stasis from '../components/Stasis.jsx';

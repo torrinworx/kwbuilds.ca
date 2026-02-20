@@ -1,9 +1,8 @@
 import { Button, Icon, StageContext, Shown, suspend, Typography, Observer, Toggle } from 'destamatic-ui';
-import { wsAuthed } from 'destam-web-core/client';
+import { wsAuthed } from '@destamatic/forge/client';
 
 import Hamburger from './Hamburger.jsx';
 import AppContext from '../utils/appContext.js';
-import Paper from './Paper.jsx';
 
 const User = StageContext.use(stage => AppContext.use(app =>
 	suspend(() => null, async () => {
