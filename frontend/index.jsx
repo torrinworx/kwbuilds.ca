@@ -29,8 +29,6 @@ import CreatePost from './pages/CreatePost.jsx';
 import Post from './pages/Post.jsx';
 import User from './pages/User.jsx';
 
-console.log("WHYYYY")
-
 let appContext;
 appContext = await syncState();
 appContext.theme = theme;

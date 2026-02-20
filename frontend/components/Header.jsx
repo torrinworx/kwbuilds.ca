@@ -35,7 +35,6 @@ const User = StageContext.use(stage => AppContext.use(app =>
 
 const Header = StageContext.use(stage => AppContext.use(app => () => {
 	const current = stage.observer.path('current');
-	console.log('here')
 
 	return <>
 
