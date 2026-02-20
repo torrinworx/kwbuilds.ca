@@ -7,9 +7,13 @@
 	"scripts": {
 		"start": "node ./backend/index.js",
 		"dev": "nodemon --watch ./destam-web-core/server --watch ./backend --exec node ./backend/index.js",
+		"dev:web": "vite --host 0.0.0.0 --port 3000",
+		"dev:android": "adb reverse tcp:3002 tcp:3002 && npx tauri android dev",
 		"build": "bash build.sh",
+		"build:web": "vite build",
 		"test": "node --test && npm --prefix destamatic-ui run test",
-		"prod": "bash build.sh && bash ./build/run.sh"
+		"prod": "bash build.sh && bash ./build/run.sh",
+		"tauri": "tauri"
 	},
 	"engines": {
 		"npm": ">=10.9.2",
@@ -30,7 +34,6 @@
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.7",
 		"destam": "^0.8.0",
-		"destam-db": "file:destam-web-core/db",
 		"destam-dom": "^0.14.4",
 		"destam-web-core": "file:destam-web-core",
 		"express": "^5.2.1",
@@ -51,6 +54,7 @@
 		"destamatic-ui": "file:destamatic-ui",
 		"esbuild": "^0.24.0",
 		"nodemon": "^3.1.7",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"@tauri-apps/cli": "^2"
 	}
 }

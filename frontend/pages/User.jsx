@@ -47,11 +47,12 @@ const uploadSingleFile = async (file) => {
 };
 
 const normalizeOtherProfile = (data) => OObject({
-	id: data?.id ?? data?.uuid ?? null,
-	uuid: data?.uuid ?? data?.id ?? null,
-	name: data?.name ?? '',
-	image: data?.image ?? null,
-	gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
+ 	id: data?.id ?? data?.uuid ?? null,
+ 	uuid: data?.uuid ?? data?.id ?? null,
+ 	name: data?.name ?? '',
+ 	image: data?.image ?? null,
+ 	description: typeof data?.description === 'string' ? data.description : '',
+ 	gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
 });
 
 const normalizeUuid = (value) =>
@@ -85,7 +86,7 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 		const queryObs = Observer.all([wsAuthed, viewedUuidObs, selfUuidObs, selfProfilePathObs]);
 
-		const activeProfileRefObs = asyncSwitch(queryObs, async ([authed, viewedUuid, selfUuid, selfProfile]) => {
+			const activeProfileRefObs = asyncSwitch(queryObs, async ([authed, viewedUuid, selfUuid, selfProfile]) => {
 			error.set('');
 
 			if (!authed && !viewedUuid) return Observer.immutable(null);
@@ -135,15 +136,26 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			return viewedUuid === selfUuid;
 		});
 
-		return profileObs.map(p => {
-			if (!p) return <NotFound />;
+			return profileObs.map(p => {
+				if (!p) return <NotFound />;
 
-			const nameObs = p.observer.path('name');
-			const editName = Observer.mutable(false);
-			const draftName = Observer.mutable(nameObs.get() ?? '');
+				const nameObs = p.observer.path('name');
+				const editName = Observer.mutable(false);
+				const draftName = Observer.mutable(nameObs.get() ?? '');
 
-			const imageUrl = p.observer
-				.path('image')
+				const descriptionObs = p.observer.path('description');
+				const editDescription = Observer.mutable(false);
+				const draftDescription = Observer.mutable(descriptionObs.get() ?? '');
+
+				// keep the draft in sync unless the user is editing
+				descriptionObs.effect(() => {
+					if (!editDescription.get()) {
+						draftDescription.set(descriptionObs.get() ?? '');
+					}
+				});
+
+				const imageUrl = p.observer
+					.path('image')
 				.map(img => img ? `/files/${img.slice(1)}` : false);
 
 			return <>
@@ -204,56 +216,106 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 					<Typography type="validate" label={error} />
 
-					<Shown value={canEditObs}>
-						<div theme="row" style={{ gap: 20 }}>
-							<Shown value={editName.map(e => !e)}>
-								<Typography type="h2" label={Observer.immutable(nameObs)} />
-							</Shown>
+				<Shown value={canEditObs}>
+					<div theme="row" style={{ gap: 20 }}>
+						<Shown value={editName.map(e => !e)}>
+							<Typography type="h2" label={Observer.immutable(nameObs)} />
+						</Shown>
 
-							<Shown value={editName}>
-								<TextField
-									type="outlined"
-									value={draftName}
-									onInput={e => draftName.set(e.target.value)}
-								/>
-							</Shown>
+						<Shown value={editName}>
+							<TextField
+								type="outlined"
+								value={draftName}
+								onInput={e => draftName.set(e.target.value)}
+							/>
+						</Shown>
 
-							<Shown value={editName.map(e => !e)}>
-								<Button
-									onClick={() => {
-										draftName.set(nameObs.get() ?? '');
-										editName.set(true);
-									}}
-									icon={<Icon name="feather:edit" />}
-								/>
-							</Shown>
+						<Shown value={editName.map(e => !e)}>
+							<Button
+								onClick={() => {
+									draftName.set(nameObs.get() ?? '');
+									editName.set(true);
+								}}
+								icon={<Icon name="feather:edit" />}
+							/>
+						</Shown>
 
-							<Shown value={editName}>
-								<Button
-									onClick={() => {
-										nameObs.set(draftName.get());
-										editName.set(false);
-									}}
-									icon={<Icon name="feather:save" />}
-								/>
-								<Button
-									onClick={() => {
-										draftName.set(nameObs.get() ?? '');
-										editName.set(false);
-									}}
-									icon={<Icon name="feather:x" />}
-								/>
-							</Shown>
-						</div>
-					</Shown>
+						<Shown value={editName}>
+							<Button
+								onClick={() => {
+									nameObs.set(draftName.get());
+									editName.set(false);
+								}}
+								icon={<Icon name="feather:save" />}
+							/>
+							<Button
+								onClick={() => {
+									draftName.set(nameObs.get() ?? '');
+									editName.set(false);
+								}}
+								icon={<Icon name="feather:x" />}
+							/>
+						</Shown>
+					</div>
+				</Shown>
 
-					<Shown value={canEditObs.map(v => !v)}>
-						<Typography type="h2" label={Observer.immutable(nameObs)} />
-					</Shown>
+				<Shown value={canEditObs.map(v => !v)}>
+					<Typography type="h2" label={Observer.immutable(nameObs)} />
+				</Shown>
 
-					<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
-					<div theme="divider" />
-				</div>
+				<Shown value={canEditObs}>
+					<div theme="form" style={{ gap: 20 }}>
+						<Shown value={editDescription.map(e => !e)}>
+							<Typography type="h3" label={Observer.immutable(descriptionObs)} />
+						</Shown>
+
+						<Shown value={editDescription}>
+							<TextField
+								type="outlined"
+								multiline
+								rows={4}
+								value={draftDescription}
+								onInput={e => draftDescription.set(e.target.value)}
+								style={{ width: '100%' }}
+							/>
+						</Shown>
+
+						<Shown value={editDescription.map(e => !e)}>
+							<Button
+								onClick={() => {
+									draftDescription.set(descriptionObs.get() ?? '');
+									editDescription.set(true);
+								}}
+								icon={<Icon name="feather:edit" />}
+							/>
+						</Shown>
+
+						<Shown value={editDescription}>
+							<Button
+								onClick={() => {
+									descriptionObs.set(draftDescription.get());
+									editDescription.set(false);
+								}}
+								icon={<Icon name="feather:save" />}
+							/>
+							<Button
+								onClick={() => {
+									draftDescription.set(descriptionObs.get() ?? '');
+									editDescription.set(false);
+								}}
+								icon={<Icon name="feather:x" />}
+							/>
+						</Shown>
+					</div>
+				</Shown>
+
+				<Shown value={canEditObs.map(v => !v)}>
+					<Typography type="h3" label={Observer.immutable(descriptionObs)} />
+				</Shown>
+
+				<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
+				<div theme="divider" />
+			</div>
 
 				<Posts
 					posts={profilePosts}
