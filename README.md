@@ -12,7 +12,7 @@ How it works:
 - The goal isn't jobs. This isn't a job board, nor is it a pitch board. This is a place where people can keep a pulse on the ideas flowing around our community. 
 
 ## Frontend workflow
-Run `npm run dev` to start the backend server and the integrated Vite dev server together; the app is available at `http://localhost:3002` and Tauri dev sessions will now attach to that address.
+Run `npm run dev` to start the backend server and the integrated Vite dev server together; the app is available at `http://localhost:3002` and Tauri dev sessions will now attach to that address. The custom backend/Vite server now runs HMR over the same port that the HTTP server listens on, so Android dev (`npm run dev:android`) only needs to reverse port `3002`—there is no separate websocket port to forward.
 With an Android device connected, use `npm run dev:android` to reverse-forward port `3002` via `adb reverse tcp:3002 tcp:3002` and then launch `npx tauri android dev`, so the device points at the same backend+Vite server as desktop dev.
 For production builds, run `npm run build:web` and then `npx tauri build`; the Tauri bundle picks up whatever Vite writes under `./build/dist`.
 Once your Android toolchain is configured, you can run `npx tauri build --target android` to produce an APK that bundles the same `./build/dist` frontend.

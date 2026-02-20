@@ -8,7 +8,7 @@
 		"start": "node ./backend/index.js",
 		"dev": "nodemon --watch ./destam-web-core/server --watch ./backend --exec node ./backend/index.js",
 		"dev:web": "vite --host 0.0.0.0 --port 3000",
-		"dev:android": "adb reverse tcp:3002 tcp:3002 && npx tauri android dev",
+		"dev:android": "adb reverse tcp:3002 tcp:3002 && adb reverse tcp:24678 tcp:24678 && TAURI_DEV_HOST=127.0.0.1 npx tauri android dev",
 		"build": "bash build.sh",
 		"build:web": "vite build",
 		"test": "node --test && npm --prefix destamatic-ui run test",

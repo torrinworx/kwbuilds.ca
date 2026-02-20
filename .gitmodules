@@ -1,6 +1,3 @@
 [submodule "destamatic-ui"]
 	path = destamatic-ui
 	url = git@github.com:torrinworx/destamatic-ui.git
-[submodule "destam-web-core"]
-	path = destam-web-core
-	url = https://github.com/torrinworx/destam-web-core.git
