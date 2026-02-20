@@ -51,7 +51,7 @@
 		"@iconify-json/svg-spinners": "^1.2.4",
 		"@iconify-json/tabler": "^1.2.22",
 		"@plausible-analytics/tracker": "^0.4.4",
-		"destamatic-ui": "file:destamatic-ui",
+		"@destamatic/ui": "file:destamatic-ui",
 		"esbuild": "^0.24.0",
 		"nodemon": "^3.1.7",
 		"vite": "^7.3.1",

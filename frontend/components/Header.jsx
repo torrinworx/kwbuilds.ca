@@ -1,4 +1,4 @@
-import { Button, Icon, StageContext, Shown, suspend, Typography, Observer, Toggle } from 'destamatic-ui';
+import { Button, Icon, StageContext, Shown, suspend, Typography, Observer, Toggle } from '@destamatic/ui';
 import { wsAuthed } from '@destamatic/forge/client';
 
 import Hamburger from './Hamburger.jsx';

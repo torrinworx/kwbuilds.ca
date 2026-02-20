@@ -5,7 +5,7 @@ import {
 	Shown,
 	Typography,
 	Icon,
-} from 'destamatic-ui';
+} from '@destamatic/ui';
 
 const Stasis = () => {
 	const timer = Observer.timer(1000);

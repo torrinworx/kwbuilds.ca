@@ -1,5 +1,5 @@
 import { Observer } from 'destam-dom';
-import { StageContext, Theme, Typography, Button, Shown } from 'destamatic-ui';
+import { StageContext, Theme, Typography, Button, Shown } from '@destamatic/ui';
 
 import Paper from './Paper.jsx';
 import Tag from './Tag.jsx';

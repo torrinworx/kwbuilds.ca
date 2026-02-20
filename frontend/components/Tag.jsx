@@ -1,4 +1,4 @@
-import { Typography, Icon } from 'destamatic-ui';
+import { Typography, Icon } from '@destamatic/ui';
 
 const Tag = ({ each }) => {
 	if (!each) return null;

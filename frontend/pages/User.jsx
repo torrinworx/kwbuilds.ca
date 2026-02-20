@@ -11,7 +11,7 @@ import {
 	FileDrop,
 	Button,
 	TextField,
-} from 'destamatic-ui';
+} from '@destamatic/ui';
 import { wsAuthed, modReq } from '@destamatic/forge/client';
 import { asyncSwitch } from '@destamatic/forge';
 

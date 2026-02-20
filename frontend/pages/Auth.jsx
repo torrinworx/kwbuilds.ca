@@ -8,7 +8,7 @@ import {
 	suspend,
 	Validate,
 	ValidateContext,
-} from 'destamatic-ui';
+} from '@destamatic/ui';
 
 import { syncState } from '@destamatic/forge/client';
 

@@ -13,7 +13,7 @@ import {
 	LoadingDots,
 	FileDrop,
 	ThemeContext,
-} from "destamatic-ui";
+} from "@destamatic/ui";
 import { modReq } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';

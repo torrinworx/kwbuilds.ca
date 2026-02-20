@@ -10,8 +10,8 @@ import {
 	Title,
 	Style,
 	Meta,
-} from 'destamatic-ui';
-import IconifyIcons from "destamatic-ui/components/icons/IconifyIcons/IconifyIcons";
+} from '@destamatic/ui';
+import IconifyIcons from "@destamatic/ui/components/icons/IconifyIcons/IconifyIcons";
 import { syncState } from '@destamatic/forge/client';
 
 import fonts from './utils/fonts.js';

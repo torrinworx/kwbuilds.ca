@@ -1,4 +1,4 @@
-import { Button, Typography, StageContext, Icon, Theme } from 'destamatic-ui';
+import { Button, Typography, StageContext, Icon, Theme } from '@destamatic/ui';
 import Paper from '../components/Paper.jsx';
 
 Theme.define({

@@ -1,4 +1,4 @@
-import { Button, Icon, StageContext, suspend, Typography, Shown } from "destamatic-ui";
+import { Button, Icon, StageContext, suspend, Typography, Shown } from "@destamatic/ui";
 
 // import SearchBar from '../components/SearchBar.jsx';
 import Stasis from '../components/Stasis.jsx';

@@ -1,4 +1,4 @@
-import { Button, Typography, Icon } from 'destamatic-ui';
+import { Button, Typography, Icon } from '@destamatic/ui';
 
 const NotFound = () => <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
 	<Typography type='h1' style={{ marginBottom: '20px' }}>404 Page Not Found</Typography>

@@ -1,4 +1,4 @@
-import { Icon, Observer } from 'destamatic-ui';
+import { Icon, Observer } from '@destamatic/ui';
 
 const ProfileCircle = ({
 	imageUrl,

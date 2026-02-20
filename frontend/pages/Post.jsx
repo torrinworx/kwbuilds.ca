@@ -1,4 +1,4 @@
-import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from 'destamatic-ui';
+import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from '@destamatic/ui';
 
 import { modReq } from '@destamatic/forge/client';
 
