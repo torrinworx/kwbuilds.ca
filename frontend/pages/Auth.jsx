@@ -8,6 +8,7 @@ import {
 	suspend,
 	Validate,
 	ValidateContext,
+	Icon,
 } from '@destamatic/ui';
 
 import { syncState } from '@destamatic/forge/client';
@@ -26,6 +27,11 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 	const loading = Observer.mutable(false);
 	const exists = Observer.mutable(false);
 	const checked = Observer.mutable(false);
+
+	const resetMode = Observer.mutable(false);
+	const resetLoading = Observer.mutable(false);
+	const resetMessage = Observer.mutable('');
+	const resetError = Observer.mutable('');
 
 	const error = Observer.mutable(''); // <-- string
 
@@ -48,7 +54,55 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 		password.set('');
 		confirmPassword.set('');
 		error.set('');
+		resetMode.set(false);
+		resetLoading.set(false);
+		resetMessage.set('');
+		resetError.set('');
 	};
+
+	const requestResetEmail = async () =>
+		runValidated(async () => {
+			if (!checked.get() || !exists.get()) {
+				error.set('Please confirm your email first.');
+				return;
+			}
+
+			resetMessage.set('');
+			resetError.set('');
+			resetLoading.set(true);
+			resetMode.set(true);
+
+			email.set((email.get() || '').trim());
+
+			try {
+				const response = await state.modReq('auth/GetResetPwd', { email: email.get() });
+				resetLoading.set(false);
+
+				console.log(response);
+
+				if (response?.error) {
+					switch (response.error) {
+						case 'reset_limit_reached':
+							resetError.set('Too many reset attempts. Please try again later.');
+							break;
+						case 'email_failed':
+							resetError.set('Unable to send email. Please try again.');
+							break;
+						case 'invalid_email':
+							resetError.set('Enter a valid email before requesting a reset.');
+							break;
+						default:
+							resetError.set('Failed to send reset link. Please try again.');
+					}
+					return;
+				}
+
+				resetMessage.set('If an account exists for this email, a reset link has been sent.');
+			} catch (e) {
+				resetLoading.set(false);
+				resetError.set(e?.message || 'Failed to send reset email.');
+			}
+		});
 
 	const checkUser = async () =>
 		runValidated(async () => {
@@ -190,34 +244,82 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 							<mark:then>
 								<Shown value={checked}>
 									<mark:then>
-										<TextField
-											style={{ margin: '10px 0px' }}
-											disabled={loading}
-											password
-											value={password}
-											onEnter={enter}
-											placeholder="Password"
-										/>
-										<Validate
-											value={password}
-											signal={submit}
-											validate={val => {
-												const v = (val.get() || '');
-												if (!v) return 'Password is required.';
-												return '';
-											}}
-										/>
+										<Shown value={resetMode}>
+											<mark:then>
+												<Typography
+													style={{ textAlign: 'center' }}
+													type="p2"
+													label="We'll email you a secure link to reset your password."
+												/>
+												<Shown value={resetMessage.map(m => !!m)}>
+													<Typography type="p1" label={resetMessage} />
+												</Shown>
+												<Shown value={resetError.map(e => !!e)}>
+													<Typography type="validate" label={resetError} />
+												</Shown>
+												<Button
+													icon={<Icon name='feather:mail' />}
+													iconPosition='right'
+													label="Send Reset Email"
+													onClick={requestResetEmail}
+													type="contained"
+													disabled={loading || resetLoading}
+												/>
+												<Button
+													icon={<Icon name='feather:arrow-left' />}
+													label="Back to Sign In"
+													type="text"
+													onClick={() => {
+														resetMode.set(false);
+														resetLoading.set(false);
+														resetMessage.set('');
+														resetError.set('');
+													}}
+												/>
+											</mark:then>
 
-										<Shown value={error.map(e => !!e)}>
-											<Typography type="validate" label={error} />
+											<mark:else>
+												<TextField
+													style={{ margin: '10px 0px' }}
+													disabled={loading}
+													password
+													value={password}
+													onEnter={enter}
+													placeholder="Password"
+												/>
+												<Validate
+													value={password}
+													signal={submit}
+													validate={val => {
+														if (resetMode.get()) return '';
+														const v = (val.get() || '');
+														if (!v) return 'Password is required.';
+														return '';
+													}}
+												/>
+
+												<Shown value={error.map(e => !!e)}>
+													<Typography type="validate" label={error} />
+												</Shown>
+
+												<Button
+													label="Enter"
+													onClick={enter}
+													type="contained"
+													disabled={loading}
+												/>
+												<Button
+													label="Forgot password?"
+													type="text"
+													onClick={() => {
+														resetMode.set(true);
+														resetMessage.set('');
+														resetError.set('');
+													}}
+													disabled={loading}
+												/>
+											</mark:else>
 										</Shown>
-
-										<Button
-											label="Enter"
-											onClick={enter}
-											type="contained"
-											disabled={loading}
-										/>
 									</mark:then>
 
 									<mark:else>

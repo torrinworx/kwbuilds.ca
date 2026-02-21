@@ -48,6 +48,26 @@ core({
 				},
 			},
 		},
+		'email/Create': {
+			transport: {
+				host: process.env.SMTP_HOST || 'smtp.resend.com',
+				port: Number.isFinite(parseInt(process.env.SMTP_PORT, 10))
+					? parseInt(process.env.SMTP_PORT, 10)
+					: 465,
+				secure: process.env.SMTP_SECURE != null
+					? process.env.SMTP_SECURE === 'true'
+					: true,
+				auth: {
+					user: process.env.SMTP_USER || 'resend',
+					pass: process.env.SMTP_PASS || process.env.RESEND_API_KEY || null,
+				},
+			},
+			from: process.env.SMTP_FROM || process.env.RESEND_FROM || 'no-reply@yourdomain.com',
+			subject: process.env.SMTP_SUBJECT || 'Reset your password',
+		},
+		'auth/GetResetPwd': {
+			clientUrl: process.env.ENV === 'development' ? `http://localhost:${process.env.PORT}/reset-password` : 'https://kwbuilds.ca/reset-password',
+		},
 		'home/Posts': {
 			limit: 24,
 			cacheTtl: 30_000,
@@ -58,5 +78,6 @@ core({
 		'static/serve': isProd ? false : {
 			filesPath: path.resolve(__dirname, '../uploads'),
 		},
+
 	},
 });

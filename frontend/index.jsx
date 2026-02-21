@@ -24,6 +24,7 @@ import Header from './components/Header.jsx';
 import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Auth from './pages/Auth.jsx';
+import ResetPwd from './pages/ResetPwd.jsx';
 import Home from './pages/Home.jsx';
 import CreatePost from './pages/CreatePost.jsx';
 import Post from './pages/Post.jsx';
@@ -65,6 +66,7 @@ const stage = {
 		landing: Landing,
 		fallback: NotFound,
 		auth: Auth,
+		'reset-password': ResetPwd,
 		home: Home,
 		'create-post': authorize(CreatePost),
 		post: Post,
