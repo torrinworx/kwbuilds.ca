@@ -32,6 +32,18 @@ const prettyBytes = (bytes = 0) => {
 	return `${n.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 };
 
+const formatDuration = (ms = 0) => {
+	const totalSeconds = Math.max(0, Math.round(ms / 1000));
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = totalSeconds % 60;
+	const parts = [];
+	if (hours) parts.push(`${hours}h`);
+	if (minutes) parts.push(`${minutes}m`);
+	if (seconds || parts.length === 0) parts.push(`${seconds}s`);
+	return parts.join(' ');
+};
+
 const uploadSingleFile = async (file) => {
 	const fd = new FormData();
 	fd.append('file', file, file.name);
@@ -47,12 +59,13 @@ const uploadSingleFile = async (file) => {
 };
 
 const normalizeOtherProfile = (data) => OObject({
- 	id: data?.id ?? data?.uuid ?? null,
- 	uuid: data?.uuid ?? data?.id ?? null,
- 	name: data?.name ?? '',
- 	image: data?.image ?? null,
- 	description: typeof data?.description === 'string' ? data.description : '',
- 	gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
+	id: data?.id ?? data?.uuid ?? null,
+	uuid: data?.uuid ?? data?.id ?? null,
+	name: data?.name ?? '',
+	image: data?.image ?? null,
+	description: typeof data?.description === 'string' ? data.description : '',
+	gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
+	emailVerified: data?.emailVerified === true,
 });
 
 const normalizeUuid = (value) =>
@@ -143,9 +156,9 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				const editName = Observer.mutable(false);
 				const draftName = Observer.mutable(nameObs.get() ?? '');
 
-				const descriptionObs = p.observer.path('description');
-				const editDescription = Observer.mutable(false);
-				const draftDescription = Observer.mutable(descriptionObs.get() ?? '');
+			const descriptionObs = p.observer.path('description');
+			const editDescription = Observer.mutable(false);
+			const draftDescription = Observer.mutable(descriptionObs.get() ?? '');
 
 				// keep the draft in sync unless the user is editing
 				descriptionObs.effect(() => {
@@ -154,12 +167,72 @@ const User = AppContext.use(app => StageContext.use(stage =>
 					}
 				});
 
-				const imageUrl = p.observer
-					.path('image')
-				.map(img => img ? `/files/${img.slice(1)}` : false);
+			const imageUrl = p.observer
+				.path('image')
+			.map(img => img ? `/files/${img.slice(1)}` : false);
 
-			return <>
-				<div theme="content_col">
+			const emailVerifiedObs = p.observer
+				.path('emailVerified')
+				.def(false)
+			.map(value => value === true);
+			const verifyLoading = Observer.mutable(false);
+			const verifyMessage = Observer.mutable('');
+			const verifyError = Observer.mutable('');
+			const canRequestVerificationObs = Observer.all([canEditObs, emailVerifiedObs]).map(([canEdit, verified]) => canEdit && !verified);
+
+			emailVerifiedObs.watch(event => {
+				if (event?.value === true) {
+					verifyLoading.set(false);
+					verifyMessage.set('');
+					verifyError.set('');
+				}
+			});
+
+			const requestVerificationEmail = async () => {
+				if (verifyLoading.get()) return;
+				verifyMessage.set('');
+				verifyError.set('');
+				verifyLoading.set(true);
+
+				const setThrottleMessage = (retryAfter) => {
+					const duration = retryAfter && retryAfter > 0
+						? formatDuration(retryAfter)
+						: 'a few moments';
+					verifyError.set(`Please wait ${duration} before requesting another verification email.`);
+				};
+
+				try {
+					const response = await modReq('auth/CreateVerifyEmail');
+					if (response?.error) {
+						switch (response.error) {
+							case 'throttled':
+							case 'resend_too_soon':
+								setThrottleMessage(response.retryAfter);
+								break;
+							case 'already_verified':
+								verifyMessage.set('Your email is already verified.');
+								break;
+							case 'email_failed':
+								verifyError.set('Unable to send verification email. Please try again.');
+								break;
+							case 'missing_email':
+								verifyError.set('Add an email address to your profile before verifying.');
+								break;
+							default:
+								verifyError.set('Unable to send verification email. Please try again later.');
+						}
+					} else {
+						verifyMessage.set('Verification email sent. Check your inbox to continue.');
+					}
+				} catch (e) {
+					verifyError.set(e?.message || 'Unable to send verification email. Please try again.');
+				} finally {
+					verifyLoading.set(false);
+				}
+			};
+
+		return <>
+			<div theme="content_col">
 					<div style={{ position: 'relative', margin: '0 auto' }}>
 						<ProfileCircle
 							size="20vw"
@@ -259,12 +332,53 @@ const User = AppContext.use(app => StageContext.use(stage =>
 					</div>
 				</Shown>
 
-				<Shown value={canEditObs.map(v => !v)}>
-					<Typography type="h2" label={Observer.immutable(nameObs)} />
+			<Shown value={canEditObs.map(v => !v)}>
+				<Typography type="h2" label={Observer.immutable(nameObs)} />
+			</Shown>
+
+			<div style={{ margin: '16px 0 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+				<Shown value={emailVerifiedObs}>
+					<mark:then>
+						<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(19, 163, 76, 0.12)', color: '#0f8d4c' }}>
+							<Icon name="feather:check-circle" />
+							<Typography type="p2" label="Email verified" />
+						</div>
+					</mark:then>
+
+					<mark:else>
+						<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(226, 132, 17, 0.12)', color: '#b15a02' }}>
+							<Icon name="feather:alert-triangle" />
+							<Typography type="p2" label="Email not verified" />
+						</div>
+					</mark:else>
 				</Shown>
 
-				<Shown value={canEditObs}>
-					<div theme="form" style={{ gap: 20 }}>
+				<Shown value={canRequestVerificationObs}>
+					<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+						<Typography type="p2" label="Send a verification email to confirm your account." />
+						<div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+							<Button
+								label="Send verification email"
+								type="outlined"
+								onClick={requestVerificationEmail}
+								disabled={verifyLoading}
+							/>
+							<Shown value={verifyLoading}>
+								<LoadingDots />
+							</Shown>
+						</div>
+						<Shown value={verifyMessage.map(m => !!m)}>
+							<Typography type="p2" label={verifyMessage} />
+						</Shown>
+						<Shown value={verifyError.map(e => !!e)}>
+							<Typography type="validate" label={verifyError} />
+						</Shown>
+					</div>
+				</Shown>
+			</div>
+
+			<Shown value={canEditObs}>
+				<div theme="form" style={{ gap: 20 }}>
 						<Shown value={editDescription.map(e => !e)}>
 							<Typography type="h3" label={Observer.immutable(descriptionObs)} />
 						</Shown>

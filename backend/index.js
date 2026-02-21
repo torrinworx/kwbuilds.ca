@@ -28,6 +28,9 @@ if (!isProd) {
 }
 
 const root = path.resolve(__dirname, process.env.ENV === 'production' ? '../dist' : '../frontend');
+const appBaseUrl = process.env.ENV === 'development'
+	? `http://localhost:${process.env.PORT}`
+	: 'https://kwbuilds.ca';
 
 core({
 	server,
@@ -66,7 +69,16 @@ core({
 			subject: process.env.SMTP_SUBJECT || 'Reset your password',
 		},
 		'auth/GetResetPwd': {
-			clientUrl: process.env.ENV === 'development' ? `http://localhost:${process.env.PORT}/reset-password` : 'https://kwbuilds.ca/reset-password',
+			clientUrl: `${appBaseUrl}/reset-password`,
+		},
+		'auth/CreateVerifyEmail': {
+			subject: 'Verify your email address',
+			tokenTtlMs: 1000 * 60 * 60 * 24,
+			maxDailyRequests: 5,
+			minResendWindowMs: 60 * 1000,
+			urls: {
+				app: appBaseUrl,
+			},
 		},
 		'home/Posts': {
 			limit: 24,

@@ -9,11 +9,14 @@ import {
 	Validate,
 	ValidateContext,
 	Icon,
+	LoadingDots,
 } from '@destamatic/ui';
 
 import { syncState } from '@destamatic/forge/client';
 
 import Stasis from '../components/Stasis.jsx';
+
+const ensureString = value => (typeof value === 'string' ? value.trim() : '');
 
 const Auth = StageContext.use(s => suspend(Stasis, async () => {
 	const state = await syncState();
@@ -39,6 +42,79 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 	const allValid = Observer.mutable(true);
 
 	const suppressEmailReset = Observer.mutable(false);
+
+	const initialVerifyToken = ensureString(s.urlProps?.verify) || '';
+	const verifyToken = Observer.mutable(initialVerifyToken);
+	const verifyStatus = Observer.mutable(initialVerifyToken ? 'loading' : 'idle');
+	const verifyMessage = Observer.mutable(initialVerifyToken ? 'Verifying email...' : '');
+	const verifyError = Observer.mutable('');
+
+	const mapVerifyError = (code) => {
+		switch (code) {
+			case 'invalid_token':
+				return 'This verification link is invalid.';
+			case 'expired':
+				return 'This verification link has expired.';
+			case 'already_verified':
+				return 'Your email is already verified.';
+			case 'internal_error':
+			default:
+				return 'Unable to verify email. Please try again.';
+		}
+	};
+
+	let verifyAttempt = 0;
+	const verifyEmailToken = async (tokenValue) => {
+		const token = ensureString(tokenValue);
+		if (!token) return;
+		const attemptId = ++verifyAttempt;
+		verifyStatus.set('loading');
+		verifyMessage.set('Verifying email...');
+		verifyError.set('');
+		try {
+			const response = await state.modReq('auth/VerifyEmail', { token });
+			if (attemptId !== verifyAttempt) return;
+			if (response?.ok || response?.error === 'already_verified') {
+				verifyStatus.set('success');
+				verifyMessage.set(response?.error === 'already_verified'
+					? 'This email is already verified.'
+					: 'Email verified successfully. You can continue signing in.');
+				verifyError.set('');
+				return;
+			}
+			verifyStatus.set('error');
+			verifyMessage.set('');
+			verifyError.set(mapVerifyError(response?.error));
+		} catch (err) {
+			if (attemptId !== verifyAttempt) return;
+			verifyStatus.set('error');
+			verifyMessage.set('');
+			verifyError.set(err?.message || 'Unable to verify email. Please try again.');
+		}
+	};
+
+	verifyToken.watch(ev => {
+		const token = ensureString(ev?.value);
+		if (!token) {
+			verifyStatus.set('idle');
+			verifyMessage.set('');
+			verifyError.set('');
+			return;
+		}
+		if (token === ensureString(ev?.prev ?? '')) return;
+		verifyEmailToken(token);
+	});
+
+	const urlPropsObs = s.observer?.path('urlProps');
+	urlPropsObs?.watch(() => {
+		const next = ensureString(urlPropsObs.get()?.verify);
+		if (next === verifyToken.get()) return;
+		verifyToken.set(next);
+	});
+
+	if (initialVerifyToken) {
+		verifyEmailToken(initialVerifyToken);
+	}
 
 	const runValidated = async (fn) => {
 		submit.set({ value: true });
@@ -207,6 +283,31 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 					gap: 20,
 				}}
 			>
+				<Shown value={verifyStatus.map(status => status !== 'idle')}>
+					<div
+						style={{
+							width: '100%',
+							borderRadius: 12,
+							padding: '12px 16px',
+							border: '1px solid rgba(0,0,0,0.08)',
+							background: 'rgba(0, 102, 204, 0.08)',
+							display: 'flex',
+							flexDirection: 'column',
+							gap: 8,
+						}}
+					>
+						<Shown value={verifyStatus.map(status => status === 'loading' || status === 'success')}>
+							<Typography type="p2" label={verifyMessage} />
+						</Shown>
+						<Shown value={verifyStatus.map(status => status === 'error')}>
+							<Typography type="validate" label={verifyError} />
+						</Shown>
+						<Shown value={verifyStatus.map(status => status === 'loading')}>
+							<LoadingDots />
+						</Shown>
+						<Typography type="p2" style={{ opacity: 0.8 }} label="Remove the verify link from the URL or navigate away to dismiss this notice." />
+					</div>
+				</Shown>
 				<Shown value={state.authed}>
 					<mark:then>
 						<Typography type="h3" label="Your Already Logged In" />
