@@ -53,7 +53,6 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 		return [];
 	};
 
-	const heroImage = post?.images?.[0] ? `/files/${post.images[0].slice(1)}` : null;
 	const normalizedTags = getTagArray(post.tags);
 	const images = post.images ?? [];
 	const imageCount = images.length;
@@ -73,8 +72,6 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 		const yyyy = d.getFullYear();
 		return `${dd}-${mm}-${yyyy}`;
 	};
-
-	console.log(post.images);
 
 	return <div theme='content_col' style={{ gap: 20 }}>
 		<Paper theme='column_fill' style={{ gap: 20, overflow: 'clip' }}>
