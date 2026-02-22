@@ -50,7 +50,6 @@ const Header = StageContext.use(stage => AppContext.use(app => () => {
 						type='contained'
 						onClick={() => stage.open({ name: 'auth' })}
 						icon={<Icon name='feather:user' size={30} />}
-						style={{ width: '100%', borderRadius: 50 }}
 					/>
 				</Shown>
 
