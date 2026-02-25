@@ -18,6 +18,7 @@ import { modReq } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';
 import Markdown from '../components/Markdown.jsx';
+import ActionField from '../components/ActionField.jsx';
 
 const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) => {
 	const FILE_LIMIT = 10 * 1024 * 1024;
@@ -31,10 +32,6 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const curTag = Observer.mutable('');
 	const files = OArray([]);
 	const fileCount = Observer.mutable(0);
-
-	const focused = Observer.mutable(false);
-	const hovered = Observer.mutable(false);
-	const buttonHovered = Observer.mutable(false);
 
 	const submit = Observer.mutable(false);
 	const allValid = Observer.mutable(true);
@@ -380,53 +377,20 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 								<Typography type='p1' label='Your tags are filled to the brim! 🍺' />
 							</mark:then>
 							<mark:else>
-								<div
-									theme={[
-										'row_radius_primary',
-										focused.bool("focused", null),
-									]}
-									style={{ background: hovered.bool("$color_hover", '$color'), gap: 5, overflow: 'clip', paddingRight: 5 }}
-								>
-									<TextField
-										type='contained'
-										value={curTag}
-										style={{ background: 'none', border: 'none', outline: 'none' }}
-										isFocused={focused}
-										isHovered={hovered}
-										placeholder='Add a tag'
-										onKeyDown={e => {
-											if (e.key === 'Enter') {
-												e.preventDefault();
-
-												const t = (curTag.get() || '').trim();
-												if (curTag.get().length < 20 && t.length > 0 && tagsLength.get() < 5) {
-													tags.push(t);
-													curTag.set('');
-												}
-											} else if (e.key === 'Escape') {
-												curTag.set('');
-												e.preventDefault();
-											}
-										}}
-										disabled={disabled}
-									/>
-									<Button
-										type='text'
-										hover={buttonHovered}
-										icon={<Icon name='feather:plus' style={{
-											color: Observer.all([hovered, buttonHovered])
-												.map(([h, bh]) => h ? "$color" : bh ? "$color" : "$color_background")
-										}} />}
-										onClick={() => {
-											const t = (curTag.get() || '').trim();
-											if (t.length > 0) {
-												tags.push(t);
-												curTag.set('');
-											}
-										}}
-										disabled={curTag.map(ct => ct.trim().length === 0 || ct.length > 20)}
-									/>
-								</div>
+								<ActionField
+									value={curTag}
+									onAction={() => {
+										const t = (curTag.get() || '').trim();
+										if (t.length > 0 && t.length <= 20 && tagsLength.get() < 5) {
+											tags.push(t);
+											curTag.set('');
+										}
+									}}
+									placeholder='Add a tag'
+									disabled={disabled}
+									textFieldType="outlined"
+									buttonType="outlined"
+								/>
 							</mark:else>
 						</Shown>
 						<div theme='row_fill_end'>
