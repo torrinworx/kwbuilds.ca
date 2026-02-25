@@ -21,6 +21,7 @@ import AppContext from '../utils/appContext.js';
 import Posts from '../components/Posts.jsx';
 
 import ProfileCircle from '../components/ProfileCircle.jsx';
+import SocialLinks from '../components/SocialLinks.jsx';
 
 const FILE_LIMIT = 10 * 1024 * 1024;
 
@@ -58,15 +59,7 @@ const uploadSingleFile = async (file) => {
 	return await res.json();
 };
 
-const normalizeOtherProfile = (data) => OObject({
-	id: data?.id ?? data?.uuid ?? null,
-	uuid: data?.uuid ?? data?.id ?? null,
-	name: data?.name ?? '',
-	image: data?.image ?? null,
-	description: typeof data?.description === 'string' ? data.description : '',
-	gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
-	emailVerified: data?.emailVerified === true,
-});
+
 
 const normalizeUuid = (value) =>
 	(typeof value === 'string' && value.trim() ? value.trim() : null);
@@ -89,9 +82,7 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			?? normalizeUuid(stage.urlProps?.id)
 			?? null;
 
-		const viewedUuidObs = urlPropsObs.map(urlProps =>
-			normalizeUuid(urlProps?.id) ?? initialViewedUuid
-		);
+		const viewedUuidObs = urlPropsObs.map(urlProps => urlProps?.id ?? initialViewedUuid);
 
 		const selfProfilePathObs = app.observer
 			.path(['sync', 'state', 'profile'])
@@ -99,7 +90,7 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 		const queryObs = Observer.all([wsAuthed, viewedUuidObs, selfUuidObs, selfProfilePathObs]);
 
-			const activeProfileRefObs = asyncSwitch(queryObs, async ([authed, viewedUuid, selfUuid, selfProfile]) => {
+		const activeProfileRefObs = asyncSwitch(queryObs, async ([authed, viewedUuid, selfUuid, selfProfile]) => {
 			error.set('');
 
 			if (!authed && !viewedUuid) return Observer.immutable(null);
@@ -117,16 +108,25 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			if (!viewedUuid) return Observer.immutable(null);
 
 			const data = await modReq('users/Read', { id: viewedUuid });
+
 			if (!data || data?.error) return Observer.immutable(null);
 
-			return Observer.immutable(normalizeOtherProfile(data));
+			return Observer.immutable(OObject({
+				id: data?.id ?? data?.uuid ?? null,
+				uuid: data?.uuid ?? data?.id ?? null,
+				name: data?.name ?? '',
+				image: data?.image ?? null,
+				description: typeof data?.description === 'string' ? data.description : '',
+				gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
+				emailVerified: data?.emailVerified === true,
+				socialLinks: data.socialLinks,
+			}));
 		});
 
 		const profileObs = activeProfileRefObs.unwrap();
 		const profilePosts = OArray([]);
-		const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs]).map(([viewed, self]) =>
-			normalizeUuid(viewed) ?? normalizeUuid(self)
-		);
+		const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs])
+			.map(([viewed, self]) => viewed ?? self);
 
 		profileUserIdObs.effect(() => {
 			const id = profileUserIdObs.get();
@@ -149,32 +149,32 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			return viewedUuid === selfUuid;
 		});
 
-			return profileObs.map(p => {
-				if (!p) return <NotFound />;
+		return profileObs.map(p => {
+			if (!p) return <NotFound />;
 
-				const nameObs = p.observer.path('name');
-				const editName = Observer.mutable(false);
-				const draftName = Observer.mutable(nameObs.get() ?? '');
+			const nameObs = p.observer.path('name');
+			const editName = Observer.mutable(false);
+			const draftName = Observer.mutable(nameObs.get() ?? '');
 
 			const descriptionObs = p.observer.path('description');
 			const editDescription = Observer.mutable(false);
 			const draftDescription = Observer.mutable(descriptionObs.get() ?? '');
 
-				// keep the draft in sync unless the user is editing
-				descriptionObs.effect(() => {
-					if (!editDescription.get()) {
-						draftDescription.set(descriptionObs.get() ?? '');
-					}
-				});
+			// keep the draft in sync unless the user is editing
+			descriptionObs.effect(() => {
+				if (!editDescription.get()) {
+					draftDescription.set(descriptionObs.get() ?? '');
+				}
+			});
 
 			const imageUrl = p.observer
 				.path('image')
-			.map(img => img ? `/files/${img.slice(1)}` : false);
+				.map(img => img ? `/files/${img.slice(1)}` : false);
 
 			const emailVerifiedObs = p.observer
 				.path('emailVerified')
 				.def(false)
-			.map(value => value === true);
+				.map(value => value === true);
 			const verifyLoading = Observer.mutable(false);
 			const verifyMessage = Observer.mutable('');
 			const verifyError = Observer.mutable('');
@@ -231,8 +231,8 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				}
 			};
 
-		return <>
-			<div theme="content_col">
+			return <>
+				<div theme="content_col">
 					<div style={{ position: 'relative', margin: '0 auto' }}>
 						<ProfileCircle
 							size="20vw"
@@ -289,147 +289,149 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 					<Typography type="validate" label={error} />
 
-				<Shown value={canEditObs}>
-					<div theme="row" style={{ gap: 20 }}>
-						<Shown value={editName.map(e => !e)}>
-							<Typography type="h2" label={Observer.immutable(nameObs)} />
-						</Shown>
+					<Shown value={canEditObs}>
+						<div theme="row" style={{ gap: 20 }}>
+							<Shown value={editName.map(e => !e)}>
+								<Typography type="h2" label={Observer.immutable(nameObs)} />
+							</Shown>
 
-						<Shown value={editName}>
-							<TextField
-								type="outlined"
-								value={draftName}
-								onInput={e => draftName.set(e.target.value)}
-							/>
-						</Shown>
+							<Shown value={editName}>
+								<TextField
+									type="outlined"
+									value={draftName}
+									onInput={e => draftName.set(e.target.value)}
+								/>
+							</Shown>
 
-						<Shown value={editName.map(e => !e)}>
-							<Button
-								onClick={() => {
-									draftName.set(nameObs.get() ?? '');
-									editName.set(true);
-								}}
-								icon={<Icon name="feather:edit" />}
-							/>
-						</Shown>
+							<Shown value={editName.map(e => !e)}>
+								<Button
+									onClick={() => {
+										draftName.set(nameObs.get() ?? '');
+										editName.set(true);
+									}}
+									icon={<Icon name="feather:edit" />}
+								/>
+							</Shown>
 
-						<Shown value={editName}>
-							<Button
-								onClick={() => {
-									nameObs.set(draftName.get());
-									editName.set(false);
-								}}
-								icon={<Icon name="feather:save" />}
-							/>
-							<Button
-								onClick={() => {
-									draftName.set(nameObs.get() ?? '');
-									editName.set(false);
-								}}
-								icon={<Icon name="feather:x" />}
-							/>
-						</Shown>
-					</div>
-				</Shown>
-
-			<Shown value={canEditObs.map(v => !v)}>
-				<Typography type="h2" label={Observer.immutable(nameObs)} />
-			</Shown>
-
-			<div style={{ margin: '16px 0 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-				<Shown value={emailVerifiedObs}>
-					<mark:then>
-						<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(19, 163, 76, 0.12)', color: '#0f8d4c' }}>
-							<Icon name="feather:check-circle" />
-							<Typography type="p2" label="Email verified" />
-						</div>
-					</mark:then>
-
-					<mark:else>
-						<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(226, 132, 17, 0.12)', color: '#b15a02' }}>
-							<Icon name="feather:alert-triangle" />
-							<Typography type="p2" label="Email not verified" />
-						</div>
-					</mark:else>
-				</Shown>
-
-				<Shown value={canRequestVerificationObs}>
-					<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-						<Typography type="p2" label="Send a verification email to confirm your account." />
-						<div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-							<Button
-								label="Send verification email"
-								type="outlined"
-								onClick={requestVerificationEmail}
-								disabled={verifyLoading}
-							/>
-							<Shown value={verifyLoading}>
-								<LoadingDots />
+							<Shown value={editName}>
+								<Button
+									onClick={() => {
+										nameObs.set(draftName.get());
+										editName.set(false);
+									}}
+									icon={<Icon name="feather:save" />}
+								/>
+								<Button
+									onClick={() => {
+										draftName.set(nameObs.get() ?? '');
+										editName.set(false);
+									}}
+									icon={<Icon name="feather:x" />}
+								/>
 							</Shown>
 						</div>
-						<Shown value={verifyMessage.map(m => !!m)}>
-							<Typography type="p2" label={verifyMessage} />
-						</Shown>
-						<Shown value={verifyError.map(e => !!e)}>
-							<Typography type="validate" label={verifyError} />
-						</Shown>
-					</div>
-				</Shown>
-			</div>
+					</Shown>
 
-			<Shown value={canEditObs}>
-				<div theme="form" style={{ gap: 20 }}>
-						<Shown value={editDescription.map(e => !e)}>
-							<Typography type="h3" label={Observer.immutable(descriptionObs)} />
-						</Shown>
+					<Shown value={canEditObs.map(v => !v)}>
+						<Typography type="h2" label={Observer.immutable(nameObs)} />
+					</Shown>
 
-						<Shown value={editDescription}>
-							<TextField
-								type="outlined"
-								multiline
-								rows={4}
-								value={draftDescription}
-								onInput={e => draftDescription.set(e.target.value)}
-								style={{ width: '100%' }}
-							/>
+					<div style={{ margin: '16px 0 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+						<Shown value={emailVerifiedObs}>
+							<mark:then>
+								<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(19, 163, 76, 0.12)', color: '#0f8d4c' }}>
+									<Icon name="feather:check-circle" />
+									<Typography type="p2" label="Email verified" />
+								</div>
+							</mark:then>
+
+							<mark:else>
+								<div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 12, background: 'rgba(226, 132, 17, 0.12)', color: '#b15a02' }}>
+									<Icon name="feather:alert-triangle" />
+									<Typography type="p2" label="Email not verified" />
+								</div>
+							</mark:else>
 						</Shown>
 
-						<Shown value={editDescription.map(e => !e)}>
-							<Button
-								onClick={() => {
-									draftDescription.set(descriptionObs.get() ?? '');
-									editDescription.set(true);
-								}}
-								icon={<Icon name="feather:edit" />}
-							/>
-						</Shown>
-
-						<Shown value={editDescription}>
-							<Button
-								onClick={() => {
-									descriptionObs.set(draftDescription.get());
-									editDescription.set(false);
-								}}
-								icon={<Icon name="feather:save" />}
-							/>
-							<Button
-								onClick={() => {
-									draftDescription.set(descriptionObs.get() ?? '');
-									editDescription.set(false);
-								}}
-								icon={<Icon name="feather:x" />}
-							/>
+						<Shown value={canRequestVerificationObs}>
+							<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+								<Typography type="p2" label="Send a verification email to confirm your account." />
+								<div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+									<Button
+										label="Send verification email"
+										type="outlined"
+										onClick={requestVerificationEmail}
+										disabled={verifyLoading}
+									/>
+									<Shown value={verifyLoading}>
+										<LoadingDots />
+									</Shown>
+								</div>
+								<Shown value={verifyMessage.map(m => !!m)}>
+									<Typography type="p2" label={verifyMessage} />
+								</Shown>
+								<Shown value={verifyError.map(e => !!e)}>
+									<Typography type="validate" label={verifyError} />
+								</Shown>
+							</div>
 						</Shown>
 					</div>
-				</Shown>
 
-				<Shown value={canEditObs.map(v => !v)}>
-					<Typography type="h3" label={Observer.immutable(descriptionObs)} />
-				</Shown>
+					<Shown value={canEditObs}>
+						<div theme="form" style={{ gap: 20 }}>
+							<Shown value={editDescription.map(e => !e)}>
+								<Typography type="h3" label={Observer.immutable(descriptionObs)} />
+							</Shown>
 
-				<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
-				<div theme="divider" />
-			</div>
+							<Shown value={editDescription}>
+								<TextField
+									type="outlined"
+									multiline
+									rows={4}
+									value={draftDescription}
+									onInput={e => draftDescription.set(e.target.value)}
+									style={{ width: '100%' }}
+								/>
+							</Shown>
+
+							<Shown value={editDescription.map(e => !e)}>
+								<Button
+									onClick={() => {
+										draftDescription.set(descriptionObs.get() ?? '');
+										editDescription.set(true);
+									}}
+									icon={<Icon name="feather:edit" />}
+								/>
+							</Shown>
+
+							<Shown value={editDescription}>
+								<Button
+									onClick={() => {
+										descriptionObs.set(draftDescription.get());
+										editDescription.set(false);
+									}}
+									icon={<Icon name="feather:save" />}
+								/>
+								<Button
+									onClick={() => {
+										draftDescription.set(descriptionObs.get() ?? '');
+										editDescription.set(false);
+									}}
+									icon={<Icon name="feather:x" />}
+								/>
+							</Shown>
+						</div>
+					</Shown>
+
+					<Shown value={canEditObs.map(v => !v)}>
+						<Typography type="h3" label={Observer.immutable(descriptionObs)} />
+					</Shown>
+
+					<SocialLinks edit={canEditObs} socials={p.socialLinks} />
+
+					<Typography theme="row_fill_start_primary" type="h2" label="Posts" />
+					<div theme="divider" />
+				</div>
 
 				<Posts
 					posts={profilePosts}

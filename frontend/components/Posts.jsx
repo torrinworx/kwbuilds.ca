@@ -4,9 +4,9 @@ import { StageContext, Theme, Typography, Button, Shown } from '@destamatic/ui';
 import Paper from './Paper.jsx';
 import Tag from './Tag.jsx';
 
-	Theme.define({
-		posts_section: {
-			display: 'flex',
+Theme.define({
+	posts_section: {
+		display: 'flex',
 		flexDirection: 'column',
 		gap: 10,
 		padding: 0,
@@ -19,24 +19,24 @@ import Tag from './Tag.jsx';
 		gap: 6,
 	},
 
-		posts_grid_fill: {
-			display: 'flex',
-			justifyContent: 'center',
-			width: '100%',
-			padding: 0,
-		},
+	posts_grid_fill: {
+		display: 'flex',
+		justifyContent: 'center',
+		width: '100%',
+		padding: 0,
+	},
 
-		posts_grid: {
-			display: 'grid',
-			gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 320px))',
-			gap: 18,
-			justifyContent: 'center',
-			width: '100%',
-			paddingBottom: 6,
-			paddingRight: 6,
-			overflow: 'visible',
-			alignContent: 'start',
-		},
+	posts_grid: {
+		display: 'grid',
+		gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 320px))',
+		gap: 18,
+		justifyContent: 'center',
+		width: '100%',
+		paddingBottom: 6,
+		paddingRight: 6,
+		overflow: 'visible',
+		alignContent: 'start',
+	},
 
 	posts_card: {
 		extends: 'radius_primary',
