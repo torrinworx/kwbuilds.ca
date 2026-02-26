@@ -428,7 +428,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 
 				<div theme='divider' />
-				<Typography type='p1' label='Add some tags to help people find your gig!' />
+				<Typography type='p1' label='Add some tags to help people find your post!' />
 
 				<div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 40 }}>
 					<Tag each={tags} />
