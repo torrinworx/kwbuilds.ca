@@ -117,7 +117,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				name: data?.name ?? '',
 				image: data?.image ?? null,
 				description: typeof data?.description === 'string' ? data.description : '',
-				gigs: Array.isArray(data?.gigs) ? [...data.gigs] : [],
 				emailVerified: data?.emailVerified === true,
 				socialLinks: data.socialLinks,
 			}));
