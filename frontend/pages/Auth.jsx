@@ -34,7 +34,7 @@ const Auth = StageContext.use(s => suspend(Stasis, async () => {
 	const resetMessage = Observer.mutable('');
 	const resetError = Observer.mutable('');
 
-	const error = Observer.mutable(''); // <-- string
+	const error = Observer.mutable('');
 
 	const submit = Observer.mutable(false);
 	const allValid = Observer.mutable(true);
