@@ -57,7 +57,7 @@ const VerifyEmail = StageContext.use(stage => suspend(Stasis, async () => {
 		try {
 			const response = await state.modReq('auth/VerifyEmail', { token: currentToken });
 			if (attemptId !== verifyAttempt) return;
-			if (response?.ok || response?.error === 'already_verified') {
+			if (response?.ok || response?.success || response?.error === 'already_verified') {
 				verifyStatus.set('success');
 				verifyMessage.set(response?.error === 'already_verified'
 					? 'This email is already verified.'
