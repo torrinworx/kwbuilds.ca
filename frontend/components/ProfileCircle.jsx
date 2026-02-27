@@ -53,7 +53,7 @@ const ProfileCircle = ({
 				}}
 			/>
 		</div>;
-	}).unwrap();
+	});
 };
 
 export default ProfileCircle;

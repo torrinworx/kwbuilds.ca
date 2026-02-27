@@ -33,7 +33,7 @@ const resolveIcon = (link) => {
 	return null;
 };
 
-const SocialLinkRow = ({ socials, each }) => {
+const SocialLinkRow = ({ socials, each, edit }) => {
 
 	console.log(each);
 
@@ -44,15 +44,17 @@ const SocialLinkRow = ({ socials, each }) => {
 			icon={<Icon name={resolveIcon(each)} />}
 			href={each}
 		/>
-		<Button
-			type="text"
-			icon={<Icon name="feather:trash-2" />}
-			onClick={() => {
-				const index = indexPosition(socials, each);
-				console.log(index, socials, each);
-				socials.splice(index, 1);
-			}}
-		/>
+		<Shown value={edit}>
+			<Button
+				type="text"
+				icon={<Icon name="feather:trash-2" />}
+				onClick={() => {
+					const index = indexPosition(socials, each);
+					console.log(index, socials, each);
+					socials.splice(index, 1);
+				}}
+			/>
+		</Shown>
 	</div>;
 };
 
@@ -66,35 +68,39 @@ const SocialLinks = ({ edit = false, socials }) => {
 	const link = Observer.mutable('');
 
 	return <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-		<Shown value={socialsLength.map(l => l === 0)}>
-			<mark:then>
-			<Typography
-				type="p1"
-				label="Add your first social link so people can connect."
-			/>
-			</mark:then>
-			<mark:else>
-			<Typography
-				type="p1"
-				label="Add more social links so people can connect."
-			/>	
-			</mark:else>
+		<Shown value={edit}>
+			<Shown value={socialsLength.map(l => l === 0)}>
+				<mark:then>
+					<Typography
+						type="p1"
+						label="Add your first social link so people can connect."
+					/>
+				</mark:then>
+				<mark:else>
+					<Typography
+						type="p1"
+						label="Add more social links so people can connect."
+					/>
+				</mark:else>
+			</Shown>
 		</Shown>
 		<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-			<SocialLinkRow each={socials} socials={socials} />
+			<SocialLinkRow each={socials} socials={socials} edit={edit} />
 		</div>
-		<ActionField
-			value={link}
-			placeholder="https://example.com/kwbuilds"
-			onAction={() => {
-				const url = (link.get() || '').trim();
-				if (!url) return;
-				socials.push(url);
-				link.set('');
-			}}
-			textFieldType="outlined"
-			buttonType="outlined"
-		/>
+		<Shown value={edit}>
+			<ActionField
+				value={link}
+				placeholder="https://example.com/kwbuilds"
+				onAction={() => {
+					const url = (link.get() || '').trim();
+					if (!url) return;
+					socials.push(url);
+					link.set('');
+				}}
+				textFieldType="outlined"
+				buttonType="outlined"
+			/>
+		</Shown>
 	</div>;
 };
 
