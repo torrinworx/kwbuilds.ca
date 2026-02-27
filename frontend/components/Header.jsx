@@ -39,7 +39,10 @@ const Header = StageContext.use(stage => AppContext.use(app => () => {
 	return <>
 
 		<div theme='row_fill_spread_wrap_content' style={{ gap: 10 }}>
-			<Typography label='KWBuilds </>' />
+			<div theme='row'>
+				<Typography label='KWBuilds' />
+				<Icon name='feather:cpu' size={50} style={{ color: '$color' }} />
+			</div>
 
 			<div theme='row' style={{ gap: 10 }}>
 				<Shown value={wsAuthed} invert>

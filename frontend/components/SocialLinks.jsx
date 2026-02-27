@@ -6,7 +6,6 @@ import {
 	Shown,
 	Typography,
 } from '@destamatic/ui';
-import { indexPosition } from 'destam/Array.js';
 
 import ActionField from '../components/ActionField.jsx';
 
@@ -33,13 +32,8 @@ const resolveIcon = (link) => {
 	return null;
 };
 
-const SocialLinkRow = ({ socials, each, edit }) => {
-
-	console.log(each);
-
-	console.log(resolveIcon(each));
-
-	return <div theme='row_center'>
+const SocialLinkRow = ({ socials, each, edit }) =>
+	<div theme="row_center">
 		<Button
 			icon={<Icon name={resolveIcon(each)} />}
 			href={each}
@@ -49,26 +43,54 @@ const SocialLinkRow = ({ socials, each, edit }) => {
 				type="text"
 				icon={<Icon name="feather:trash-2" />}
 				onClick={() => {
-					const index = indexPosition(socials, each);
-					console.log(index, socials, each);
-					socials.splice(index, 1);
+					const index = socials.indexOf(each);
+					if (index >= 0) socials.splice(index, 1);
 				}}
 			/>
 		</Shown>
 	</div>;
-};
 
-const SocialLinks = ({ edit = false, socials }) => {
-	if (!(socials instanceof OArray)) socials = OArray(socials);
+const SocialLinks = ({ edit = false, canEdit = false, socials }, cleanup) => {
+	if (socials === false) return null;
+	if (!(socials instanceof OArray)) {
+		throw new Error('SocialLinks expects socials to be an OArray (or false).');
+	}
+
 	if (!(edit instanceof Observer)) edit = Observer.mutable(edit);
+	if (!(canEdit instanceof Observer)) canEdit = Observer.mutable(canEdit);
 
+	const isEditing = Observer.mutable(false);
+	const effectiveEdit = Observer.all([edit, isEditing]).map(([forced, local]) => !!forced || !!local);
 	const socialsLength = Observer.mutable(0);
-	socials.observer.effect(() => socialsLength.set(socials.length));
+	cleanup(socials.observer.effect(() => socialsLength.set(socials.length)));
 
 	const link = Observer.mutable('');
 
-	return <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-		<Shown value={edit}>
+	return <div theme='row_fill' style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+		<div theme='row' style={{ gap: 8 }}>
+			<SocialLinkRow each={socials} socials={socials} edit={effectiveEdit} />
+		</div>
+		<div theme="row_fill_end" style={{ alignItems: 'center' }}>
+			<Shown value={canEdit}>
+				<Shown value={effectiveEdit.map(e => !e)}>
+					<Button
+						icon={<Icon name="feather:edit" />}
+						onClick={() => isEditing.set(true)}
+					/>
+				</Shown>
+
+				<Shown value={effectiveEdit}>
+					<div theme="row" style={{ gap: 8 }}>
+						<Button
+							icon={<Icon name="feather:x" />}
+							onClick={() => isEditing.set(false)}
+						/>
+					</div>
+				</Shown>
+			</Shown>
+		</div>
+
+		<Shown value={effectiveEdit}>
 			<Shown value={socialsLength.map(l => l === 0)}>
 				<mark:then>
 					<Typography
@@ -84,10 +106,8 @@ const SocialLinks = ({ edit = false, socials }) => {
 				</mark:else>
 			</Shown>
 		</Shown>
-		<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-			<SocialLinkRow each={socials} socials={socials} edit={edit} />
-		</div>
-		<Shown value={edit}>
+
+		<Shown value={effectiveEdit}>
 			<ActionField
 				value={link}
 				placeholder="https://example.com/kwbuilds"

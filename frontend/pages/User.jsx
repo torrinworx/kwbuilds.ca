@@ -60,8 +60,6 @@ const uploadSingleFile = async (file) => {
 	return await res.json();
 };
 
-
-
 const normalizeUuid = (value) =>
 	(typeof value === 'string' && value.trim() ? value.trim() : null);
 
@@ -119,11 +117,10 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				image: data?.image ?? null,
 				description: typeof data?.description === 'string' ? data.description : '',
 				emailVerified: data?.emailVerified === true,
-				socialLinks: data.socialLinks,
+				socialLinks: OArray(Array.isArray(data?.socialLinks) ? data.socialLinks : []),
 			}));
 		});
 
-		const profileObs = activeProfileRefObs.unwrap();
 		const profilePosts = OArray([]);
 		const profileUserIdObs = Observer.all([viewedUuidObs, selfUuidObs])
 			.map(([viewed, self]) => viewed ?? self);
@@ -149,10 +146,9 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			return viewedUuid === selfUuid;
 		});
 
-		// ...everything above stays the same
-
-		return profileObs.map(p => {
+		return activeProfileRefObs.unwrap().map(p => {
 			if (!p) return <NotFound />;
+			console.log(p.observer.path('socialLinks'));
 
 			const nameObs = p.observer.path('name');
 			const editName = Observer.mutable(false);
@@ -235,7 +231,7 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 			return <>
 				<div theme="content_col">
-					<div theme='row' style={{ gap: 20, alignItems: 'stretch' }}>
+					<div theme='row_fill' style={{ gap: 20, alignItems: 'stretch' }}>
 						<div theme="column" style={{ position: 'relative', margin: '0 auto', gap: 8 }}>
 							<div style={{ position: 'relative' }}>
 								<ProfileCircle
@@ -391,10 +387,9 @@ const User = AppContext.use(app => StageContext.use(stage =>
 							</div>
 						</div>
 					</div>
-					<SocialLinks edit={canEditObs} socials={p.socialLinks} />
 
-					<Typography theme="row_fill_start_primary" type="h2" label="Description" />
-					<div theme="divider" />
+					<SocialLinks canEdit={canEditObs} socials={p.socialLinks} />
+					<div theme='divider' />
 					{/* TODO: Render description in markdown */}
 					<div theme="form_fill" style={{ gap: 20 }}>
 						<Shown value={canEditObs}>
