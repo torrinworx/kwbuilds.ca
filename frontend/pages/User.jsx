@@ -148,7 +148,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 
 		return activeProfileRefObs.unwrap().map(p => {
 			if (!p) return <NotFound />;
-			console.log(p.observer.path('socialLinks'));
 
 			const nameObs = p.observer.path('name');
 			const editName = Observer.mutable(false);
