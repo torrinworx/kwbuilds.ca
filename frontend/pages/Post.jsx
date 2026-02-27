@@ -1,9 +1,8 @@
 import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from '@destamatic/ui';
 
-import { modReq } from '@destamatic/forge/client';
+import { modReq, Stasis } from '@destamatic/forge/client';
 
 import NotFound from './NotFound.jsx'
-import Stasis from '../components/Stasis.jsx';
 import AppContext from '../utils/appContext.js';
 import Markdown from '../components/Markdown.jsx';
 import Paper from '../components/Paper.jsx';

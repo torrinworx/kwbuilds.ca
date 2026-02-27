@@ -12,13 +12,12 @@ import {
 	Meta,
 } from '@destamatic/ui';
 import IconifyIcons from "@destamatic/ui/components/icons/IconifyIcons/IconifyIcons";
-import { syncState } from '@destamatic/forge/client';
+import { syncState, Stasis } from '@destamatic/forge/client';
 
 import fonts from './utils/fonts.js';
 import { themeSetup, theme } from './utils/theme.js';
 import AppContext from './utils/appContext.js';
 
-import Stasis from './components/Stasis.jsx';
 import Header from './components/Header.jsx';
 
 import Landing from './pages/Landing.jsx';

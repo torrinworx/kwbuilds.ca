@@ -13,11 +13,10 @@ import {
 	TextField,
 	TextArea,
 } from '@destamatic/ui';
-import { wsAuthed, modReq } from '@destamatic/forge/client';
+import { wsAuthed, modReq, Stasis } from '@destamatic/forge/client';
 import { asyncSwitch } from '@destamatic/forge';
 
 import NotFound from './NotFound.jsx';
-import Stasis from '../components/Stasis.jsx';
 import AppContext from '../utils/appContext.js';
 import Posts from '../components/Posts.jsx';
 

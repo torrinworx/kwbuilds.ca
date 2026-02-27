@@ -1,7 +1,7 @@
 import { Button, Icon, StageContext, suspend, Typography, Shown } from "@destamatic/ui";
+import { Stasis } from '@destamatic/forge/client';
 
 // import SearchBar from '../components/SearchBar.jsx';
-import Stasis from '../components/Stasis.jsx';
 import Posts from '../components/Posts.jsx';
 import AppContext from '../utils/appContext.js';
 

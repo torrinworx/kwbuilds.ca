@@ -12,9 +12,7 @@ import {
 	LoadingDots,
 } from '@destamatic/ui';
 
-import { syncState } from '@destamatic/forge/client';
-
-import Stasis from '../components/Stasis.jsx';
+import { syncState, Stasis } from '@destamatic/forge/client';
 
 const ensureString = value => (typeof value === 'string' ? value.trim() : '');
 
