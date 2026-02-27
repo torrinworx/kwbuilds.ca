@@ -10,15 +10,13 @@ import {
 	StageContext,
 	Observer,
 	OArray,
-	LoadingDots,
 	FileDrop,
 	ThemeContext,
 } from "@destamatic/ui";
-import { modReq } from '@destamatic/forge/client';
+import { modReq, ActionField } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';
 import Markdown from '../components/Markdown.jsx';
-import ActionField from '../components/ActionField.jsx';
 
 const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) => {
 	const FILE_LIMIT = 10 * 1024 * 1024;

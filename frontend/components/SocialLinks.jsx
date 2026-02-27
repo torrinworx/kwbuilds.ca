@@ -7,7 +7,7 @@ import {
 	Typography,
 } from '@destamatic/ui';
 
-import ActionField from '../components/ActionField.jsx';
+import { ActionField } from '@destamatic/forge/client';
 
 const socialIconMap = {
 	'instagram.com': 'simpleIcons:instagram',
@@ -29,7 +29,7 @@ const resolveIcon = (link) => {
 	for (const domain in socialIconMap) {
 		if (host === domain || host.endsWith(`.${domain}`)) return socialIconMap[domain];
 	}
-	return null;
+	return 'feather:link';
 };
 
 const SocialLinkRow = ({ socials, each, edit }) =>
