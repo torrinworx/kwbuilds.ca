@@ -31,11 +31,11 @@
 	"homepage": "https://github.com/torrinworx/kwbuilds.ca#readme",
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.971.0",
+		"@destamatic/forge": "file:destamatic-forge",
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.7",
 		"destam": "^0.8.0",
 		"destam-dom": "^0.14.4",
-		"@destamatic/forge": "file:destamatic-forge",
 		"express": "^5.2.1",
 		"multer": "^2.0.2",
 		"ws": "^8.18.0"
@@ -45,16 +45,16 @@
 		"@babel/generator": "^7.25.6",
 		"@babel/parser": "^7.25.6",
 		"@babel/plugin-syntax-jsx": "^7.24.7",
+		"@destamatic/ui": "file:destamatic-ui",
 		"@iconify-json/feather": "^1.2.1",
 		"@iconify-json/lineicons": "^1.2.6",
 		"@iconify-json/simple-icons": "^1.2.1",
 		"@iconify-json/svg-spinners": "^1.2.4",
 		"@iconify-json/tabler": "^1.2.22",
 		"@plausible-analytics/tracker": "^0.4.4",
-		"@destamatic/ui": "file:destamatic-ui",
+		"@tauri-apps/cli": "^2",
 		"esbuild": "^0.24.0",
 		"nodemon": "^3.1.7",
-		"vite": "^7.3.1",
-		"@tauri-apps/cli": "^2"
+		"vite": "^7.3.1"
 	}
 }

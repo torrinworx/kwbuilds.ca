@@ -10,3 +10,6 @@
 - [ ] update build setup.sh and build.sh files and github actions to work with kwbuilds. Update deployment digital ocean droplet to properly deploy kwbuilds.ca
 - [ ] Create more local friendly features, located in this part of waterloo/kitchener. 
 - [ ] Create a calendar invite system integrating with google calendar or generic calendar thing. Allow users to create and post events. Maybe wrap the post system and make it more extensible.
+- [ ] Add project location information, optional, use precise location vs use general location, randomize the center of the radius so that the exact center isn't on the users actual location. 
+- [ ] MapInput, fix radius jitter when meters counter changes length
+- [ ] Map, fix zoom in/out buttons paper so that the height is tighter and not filling.
