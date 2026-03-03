@@ -13,7 +13,8 @@ import {
 	FileDrop,
 	ThemeContext,
 } from "@destamatic/ui";
-import { modReq, ActionField } from '@destamatic/forge/client';
+import L from 'leaflet';
+import { modReq, ActionField, Map, MapInput } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';
 import Markdown from '../components/Markdown.jsx';
@@ -35,6 +36,17 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const allValid = Observer.mutable(true);
 	const error = Observer.mutable('');
 	const descriptionMode = Observer.mutable('edit');
+	const mapCenter = Observer.mutable({ lat: 43.4643, lng: -80.5204 });
+	const mapZoom = Observer.mutable(13);
+	const mapSelection = Observer.mutable({ lat: 43.4643, lng: -80.5204, radius: 800, mode: 'radius' });
+	const mapLayers = Observer.mutable([
+		(map) => L.marker([43.4643, -80.5204]).addTo(map),
+		(map) => L.marker([43.4722, -80.5449]).addTo(map),
+		(map) => L.marker([43.4516, -80.4925]).addTo(map),
+	]);
+	const mapControls = Observer.mutable([
+		(map) => L.control.scale().addTo(map),
+	]);
 
 	const Tag = ({ each: tag }) => {
 		const index = tags.indexOf(tag);
@@ -215,6 +227,34 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	};
 
 	return <ValidateContext value={allValid}>
+		<div theme='column_fill' style={{ gap: 20, marginBottom: 60 }}>
+			<Typography type='h2' label='Map Stub' />
+			<Map
+				center={mapCenter}
+				zoom={mapZoom}
+				layers={mapLayers}
+				controls={mapControls}
+				style={{ height: 360 }}
+			/>
+			<MapInput
+				value={mapSelection}
+				minRadius={100}
+				maxRadius={3000}
+				radiusStep={50}
+				mapHeight={360}
+				mapProps={{ zoom: mapZoom }}
+			/>
+			<Typography
+				type='p2'
+				label={mapSelection.map(v => {
+					const lat = Number.isFinite(v?.lat) ? v.lat.toFixed(4) : '--';
+					const lng = Number.isFinite(v?.lng) ? v.lng.toFixed(4) : '--';
+					const radius = Number.isFinite(v?.radius) ? Math.round(v.radius) : '--';
+					const mode = v?.mode || '--';
+					return `Selected: ${lat}, ${lng} | radius ${radius}m | mode ${mode}`;
+				})}
+			/>
+		</div>
 		<div theme='content_col' >
 			<div theme='column_fill_center' style={{ textAlign: 'center', marginBottom: 60 }}>
 				<Typography type='h1' label='Post about your project!' />

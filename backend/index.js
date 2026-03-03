@@ -80,6 +80,10 @@ core({
 				app: appBaseUrl,
 			},
 		},
+		'geo/Nominatim': {
+			userAgent: 'KWBuilds/0.1 (contact: torrin@torrin.me)',
+			referer: appBaseUrl,
+		},
 		'home/Posts': {
 			limit: 24,
 			cacheTtl: 30_000,
