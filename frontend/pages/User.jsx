@@ -133,7 +133,6 @@ const User = AppContext.use(app => StageContext.use(stage =>
 			}
 			(async () => {
 				const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
-				// profilePosts.set(Array.isArray(payload) ? payload : []);
 				profilePosts.splice(0, profilePosts.length, ...payload);
 			})();
 		});
