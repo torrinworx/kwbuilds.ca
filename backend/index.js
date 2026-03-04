@@ -91,7 +91,7 @@ core({
 			sortField: 'createdAt',
 			sortDir: -1,
 		},
-		'static/serve': isProd ? false : {
+		'static/Serve': isProd ? false : {
 			filesPath: path.resolve(__dirname, '../uploads'),
 		},
 
