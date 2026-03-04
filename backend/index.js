@@ -5,6 +5,7 @@ import { promises as fs } from 'fs';
 import { core } from "@destamatic/forge/server";
 
 import server from '@destamatic/forge/server/servers/express.js';
+import mongodbDriver from '../destamatic-forge/odb/drivers/mongodb.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,10 +36,13 @@ const appBaseUrl = process.env.ENV === 'development'
 core({
 	server,
 	root,
-	db: process.env.db,
-	table: process.env.table,
 	env: process.env.ENV,
 	port: process.env.PORT,
+	odbDriver: mongodbDriver,
+	odbDriverProps: {
+		uri: process.env.db,
+		dbName: process.env.table,
+	},
 
 	modulesDir: path.resolve(__dirname, './modules'),
 

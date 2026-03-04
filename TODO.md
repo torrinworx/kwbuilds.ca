@@ -22,3 +22,8 @@
 
 # in progress
 - [ ] Add project location information, optional, use precise location vs use general location, randomize the center of the radius so that the exact center isn't on the users actual location. 
+
+
+# future/other projects
+- [ ] build out a token friendly ifier that is able to run on a git repo everytime a commit is made, that continously runs, sort of like a github build task, that runs and is able to generate and keep up to date documentation. maybe separate from the codebase? Maybe somehow include condensed chat context and summarize key findings and decisions. the goal would be to document the decisions made behind writing code the way it's written, as that's a key thing that isn't clearly explicit in programming. It's clear what this for loop does, but it's not clear just atomicly viewing that for loop what it's larger role in a system is. You can contextual infer something like that, but that infering behaviour leaves room for errors. A self correcting wiki, that runs continously on each commit and update to the repo would be interesting to document an ecosystem of repos like the destam/destamatic ecosystems.
+
