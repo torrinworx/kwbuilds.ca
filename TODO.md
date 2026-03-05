@@ -11,7 +11,6 @@
 - [ ] build out test framework and system to make module validation and in memory testing possible. Since modules depend on things like users db entries and access to odb, we need to provide that info in memory. Before we do this, core.js needs to be updated to be db agnostic, and provide a pass through for whatever db driver the user wants to use.
 
 # Low
-- [ ] simplify CreateVerifyEmail.js so that it doesn't rely on mongodb specific driver functionalities. prefer odb.
 - [ ] Simplify posts/Read.js so that it doesn't rely on mongodb and uses the odb abstraction.
 - [ ] Abstract scheduler delete and cleanup logic, deleteAt, so that it can scan all items in a db for deleteAt, then remove them, plus run a cleanup function. Say for deleting files on the s3 bucket, cleanup() would handle that. General 
 - [ ] Fix the social links validators in state/Validator.js so that any link is acceptable, whitelist might not be the acceptable approach. but how do we moderate links to things like onlyfans or pornhub so that users can't add that? I want someone to be able to add their persona blog, but not their onlyfans account lol

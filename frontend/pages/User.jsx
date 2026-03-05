@@ -132,8 +132,12 @@ const User = AppContext.use(app => StageContext.use(stage =>
 				return;
 			}
 			(async () => {
-				const payload = await app.modReq('users/Posts', { user: id, limit: 24 });
-				profilePosts.splice(0, profilePosts.length, ...payload);
+				const payload = await app.modReq('posts/Read', { user: id, limit: 24 });
+				profilePosts.splice(
+					0,
+					profilePosts.length,
+					...(Array.isArray(payload) ? payload : [])
+				);
 			})();
 		});
 
