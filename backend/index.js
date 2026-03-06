@@ -95,6 +95,10 @@ core({
 			sortField: 'createdAt',
 			sortDir: -1,
 		},
+		'notifications/Create': {
+			limit: 50,
+			allowTest: true,
+		},
 		'static/Serve': isProd ? false : {
 			filesPath: path.resolve(__dirname, '../uploads'),
 		},

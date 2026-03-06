@@ -68,6 +68,17 @@ const Header = StageContext.use(stage => AppContext.use(app => () => {
 							style={{ width: '100%' }}
 						/>
 					</Shown>
+					<Shown value={wsAuthed}>
+						<Button
+							title='Notifications'
+							label='Notifications'
+							iconPosition='right'
+							type='outlined'
+							onClick={() => stage.open({ name: 'notifications' })}
+							icon={<Icon name='feather:bell' size={30} />}
+							style={{ width: '100%' }}
+						/>
+					</Shown>
 					{/* <Shown value={current.map(c => c != 'admin' && app?.sync?.state?.profile?.role === 'admin')} >
 						<Button
 							title='Admin'

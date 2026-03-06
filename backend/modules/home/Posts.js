@@ -16,20 +16,13 @@ const serializePost = (post) => {
 	return out;
 };
 
-const DEFAULT_LIMIT = 20;
-const DEFAULT_MAX_LIMIT = 50;
-const DEFAULT_CACHE_TTL = 15_000;
-const DEFAULT_CACHE_SIZE = 50;
-const DEFAULT_SORT_FIELD = 'createdAt';
-const DEFAULT_SORT_DIR = -1;
-
 export const defaults = {
-	limit: DEFAULT_LIMIT,
-	maxLimit: DEFAULT_MAX_LIMIT,
-	cacheTtl: DEFAULT_CACHE_TTL,
-	cacheSize: DEFAULT_CACHE_SIZE,
-	sortField: DEFAULT_SORT_FIELD,
-	sortDir: DEFAULT_SORT_DIR,
+	limit: 20,
+	maxLimit: 50,
+	cacheTtl: 15_000,
+	cacheSize: 50,
+	sortField: 'createdAt',
+	sortDir: -1,
 };
 
 const normalizePositiveInt = (value, fallback) => {
@@ -47,14 +40,14 @@ const normalizeNonNegativeInt = (value, fallback) => {
 };
 
 export default ({ webCore }) => {
-	const cfg = webCore?.config || {};
-
-	const limitDefault = normalizePositiveInt(cfg.limit, DEFAULT_LIMIT);
-	const limitCap = Math.max(limitDefault, normalizePositiveInt(cfg.maxLimit, DEFAULT_MAX_LIMIT));
-	const cacheTtl = normalizePositiveInt(cfg.cacheTtl, DEFAULT_CACHE_TTL);
-	const cacheSize = Math.max(1, normalizePositiveInt(cfg.cacheSize, DEFAULT_CACHE_SIZE));
-	const sortField = typeof cfg.sortField === 'string' && cfg.sortField.trim() ? cfg.sortField.trim() : DEFAULT_SORT_FIELD;
-	const sortDir = cfg.sortDir === 1 ? 1 : DEFAULT_SORT_DIR;
+	const limitDefault = normalizePositiveInt(webCore.config.limit, defaults.limit);
+	const limitCap = Math.max(limitDefault, normalizePositiveInt(webCore.config.maxLimit, defaults.maxLimit));
+	const cacheTtl = normalizePositiveInt(webCore.config.cacheTtl, defaults.cacheTtl);
+	const cacheSize = Math.max(1, normalizePositiveInt(webCore.config.cacheSize, defaults.cacheSize));
+	const sortField = typeof webCore.config.sortField === 'string' && webCore.config.sortField.trim()
+		? webCore.config.sortField.trim()
+		: defaults.sortField;
+	const sortDir = webCore.config.sortDir === 1 ? 1 : defaults.sortDir;
 
 	const cache = new Map();
 
@@ -71,10 +64,9 @@ export default ({ webCore }) => {
 	return {
 		authenticated: false,
 
-		onMsg: async (props, ctx) => {
+		onMessage: async (props, ctx) => {
 			const p = props || {};
 			const odb = ctx?.odb;
-			if (!odb) throw new Error('home/Posts: odb not provided');
 
 			const limit = Math.min(
 				Math.max(1, normalizePositiveInt(p.limit, limitDefault)),

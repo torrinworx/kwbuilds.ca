@@ -29,6 +29,7 @@ import Home from './pages/Home.jsx';
 import CreatePost from './pages/CreatePost.jsx';
 import Post from './pages/Post.jsx';
 import User from './pages/User.jsx';
+import Notifications from './pages/Notifications.jsx';
 
 let appContext;
 appContext = await syncState();
@@ -72,6 +73,7 @@ const stage = {
 		'create-post': authorize(CreatePost),
 		post: Post,
 		user: User,
+		notifications: authorize(Notifications),
 	},
 	onOpen: () => {
 		window.scrollTo(0, 0);
