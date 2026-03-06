@@ -13,7 +13,7 @@ npm run build:web
 # vite build --config vite.config.ssg.js
 
 # SSG step
-# node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://opengig.org
+# node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://kwbuilds.ca
 
 # Server
 cp -R ./backend "$BUILD_DIR/backend"

@@ -7,20 +7,20 @@ if [[ -z "$BUILD_DIR" || ! -d "$BUILD_DIR" ]]; then
   exit 1
 fi
 
-SERVICE_NAME="opengig.org"
+SERVICE_NAME="kwbuilds.ca"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 
-DEPLOY_DIR="/var/www/opengig.org/deploy"
-ENV_FILE="/var/www/opengig.org/.env"
+DEPLOY_DIR="/var/www/kwbuilds.ca/deploy"
+ENV_FILE="/var/www/kwbuilds.ca/.env"
 
-NGINX_SITE_AVAILABLE="/etc/nginx/sites-available/opengig.org"
-NGINX_SITE_ENABLED="/etc/nginx/sites-enabled/opengig.org"
+NGINX_SITE_AVAILABLE="/etc/nginx/sites-available/kwbuilds.ca"
+NGINX_SITE_ENABLED="/etc/nginx/sites-enabled/kwbuilds.ca"
 
 NGINX_DEFAULT_DENY_AVAIL="/etc/nginx/sites-available/00-default-deny"
 NGINX_DEFAULT_DENY_ENAB="/etc/nginx/sites-enabled/00-default-deny"
 
-DOMAIN="opengig.org"
-WEBROOT="/var/www/opengig.org/html"
+DOMAIN="kwbuilds.ca"
+WEBROOT="/var/www/kwbuilds.ca/html"
 EMAIL="torrin@torrin.me"
 
 CERT_LIVE_DIR="/etc/letsencrypt/live/${DOMAIN}"
@@ -69,15 +69,15 @@ fi
 # systemd service
 cat << 'EOF' | tee "$SERVICE_FILE" > /dev/null
 [Unit]
-Description=opengig.org
+Description=kwbuilds.ca
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/var/www/opengig.org/deploy/run.sh
-WorkingDirectory=/var/www/opengig.org/deploy
+ExecStart=/var/www/kwbuilds.ca/deploy/run.sh
+WorkingDirectory=/var/www/kwbuilds.ca/deploy
 Restart=always
-EnvironmentFile=/var/www/opengig.org/.env
+EnvironmentFile=/var/www/kwbuilds.ca/.env
 
 [Install]
 WantedBy=multi-user.target
