@@ -29,9 +29,6 @@ if (!isProd) {
 }
 
 const root = path.resolve(__dirname, process.env.ENV === 'production' ? '../dist' : '../frontend');
-const appBaseUrl = process.env.ENV === 'development'
-	? `http://localhost:${process.env.PORT}`
-	: 'https://kwbuilds.ca';
 
 core({
 	server,
@@ -44,64 +41,8 @@ core({
 		dbName: process.env.table,
 	},
 
-	modulesDir: path.resolve(__dirname, './modules'),
-
-	moduleConfig: {
-		'posts/Create': {
-			fields: {
-				name: false,
-				description: {
-					maxLength: 5000,
-				},
-			},
-		},
-		'email/Create': {
-			transport: {
-				host: process.env.SMTP_HOST || 'smtp.resend.com',
-				port: Number.isFinite(parseInt(process.env.SMTP_PORT, 10))
-					? parseInt(process.env.SMTP_PORT, 10)
-					: 465,
-				secure: process.env.SMTP_SECURE != null
-					? process.env.SMTP_SECURE === 'true'
-					: true,
-				auth: {
-					user: process.env.SMTP_USER || 'resend',
-					pass: process.env.SMTP_PASS || process.env.RESEND_API_KEY || null,
-				},
-			},
-			from: process.env.SMTP_FROM || process.env.RESEND_FROM || 'no-reply@yourdomain.com',
-			subject: process.env.SMTP_SUBJECT || 'Reset your password',
-		},
-		'auth/GetResetPwd': {
-			clientUrl: `${appBaseUrl}/reset-password`,
-		},
-		'auth/CreateVerifyEmail': {
-			subject: 'Verify your email address',
-			tokenTtlMs: 1000 * 60 * 60 * 24,
-			maxDailyRequests: 5,
-			minResendWindowMs: 60 * 1000,
-			urls: {
-				app: appBaseUrl,
-			},
-		},
-		'geo/Nominatim': {
-			userAgent: 'KWBuilds/0.1 (contact: torrin@torrin.me)',
-			referer: appBaseUrl,
-		},
-		'home/Posts': {
-			limit: 24,
-			cacheTtl: 30_000,
-			cacheSize: 64,
-			sortField: 'createdAt',
-			sortDir: -1,
-		},
-		'notifications/Create': {
-			limit: 50,
-			allowTest: true,
-		},
-		'static/Serve': isProd ? false : {
-			filesPath: path.resolve(__dirname, '../uploads'),
-		},
-
-	},
+	modulesDir: [
+		path.resolve(__dirname, './overrides'),
+		path.resolve(__dirname, './modules'),
+	],
 });
