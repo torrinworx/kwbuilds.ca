@@ -30,15 +30,7 @@
 	},
 	"homepage": "https://github.com/torrinworx/kwbuilds.ca#readme",
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.971.0",
-		"@destamatic/forge": "file:destamatic-forge",
-		"bcryptjs": "^2.4.3",
-		"cookie-parser": "^1.4.7",
-		"destam": "^0.8.0",
-		"destam-dom": "^0.14.4",
-		"express": "^5.2.1",
-		"multer": "^2.0.2",
-		"ws": "^8.18.0"
+		"@destamatic/forge": "file:destamatic-forge"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.25.2",
@@ -55,6 +47,7 @@
 		"@tauri-apps/cli": "^2",
 		"esbuild": "^0.24.0",
 		"nodemon": "^3.1.7",
-		"vite": "^7.3.1"
+		"vite": "^7.3.1",
+		"destam-dom": "^0.14.4"
 	}
 }
