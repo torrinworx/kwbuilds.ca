@@ -2,30 +2,7 @@
 - [ ] qdrant vector db system, allow all uploaded files to be parsed and indexed by a qdrant vectorization process so that we can symantically search all content a user uploads, posts, writes about, etc. Should be able to handle any file type. csv, json, pdf, pdf with images, images (ocr and image tagging), system should be setup with clear authentication access. So that users can search things publicly available, or search private files or things they don't want other users to see. Should be generic enough. needs to support: public searches, private authenticated searches, permissions for users to view and search private data, updatability (if a user deletes or archives a file, it no longer appears in qdrant searches), should be fully linked with the file upload modules system in terms of read/writing. tag system so that users searching for "posts" don't find "comments". Allow other modules to import and optionally use the qdrant/vectordb Create method so that they can store arbitrary data like posts, comments, etc with unique tags for search filtering. Modules should be able to function completely independently of the qdrant system, because some users might not want to use a vectordb system in their designs. Should be able to pull and use an open source vectorization model localy, on startup the system checks if there is a vectorication model locally, if not it pulls it from like huggingface or somewhere. The normal file upload system should operate independently from the vector db modules. We might need to extend the modules system in destamatic-forge to allow for optional dependencies. 
 - [ ] chat, build off of the chat.test.js that we have setup with paginate and odb to create a realtime chat interface and pagination system that is able to disaply live edits.
 - [ ] implement admin module authentication support in core.js. Or maybe a more general permissions based system, that allows arbitrary roles to access any number of types of gated modules. admin, manager, owner, product, developer, customer, client, etc. Should be able to support that. Might need a role tweak to the users Create.js file. Role manager client and module system so that admins can access and modify roles of users.
-- [ ] modules extensibility. I see this the more and more modules are built out. We need a way to provide user defined variables and things that input into a module, then after can transform how they are applied into the module. I want the plan to be, leave alone the core logic of each module, allow users to provide arbitrary inputs, allow for an onBefore, and onAfter. not sure if we should allow them to wrap internal(), onConnection(), onMessage(), one of them or all of them? Idk what complications that would add. onAfter receives all the outputs of the module, and can transform things before database writes. this can allow things like the creation of users in Enter.js, to have arbitrary parameters on sign up, like username, user gender, birthday, age, etc without us having to manually define these props in each of the core default modules. We can just let users create their own modules/auth/Enter.js that does something like:
-```javascript
-
-default export ({}) => {
-
-	return {
-		config: { // module defaults config.
-			// user defined defaults, this would replace /backend/index.js configuration, and allow for a directory based sturctured defaults declaration.
-			// avoids sprawling index.js backend files. and allows for cooler thing like this:
-		}
-		onBefore: (props) => {
-			return props // transforms inputs possibly? 
-		},
-		onAfter: (props) => {
-			return props // transofrms output possibly?
-		},
-	}
-}
-```
-This design kinda hints at the fact that the defaults system should receive a v2 where we define default values and module configs as modules themselves. 
-
-Something declared by a user like above, shouldn't overwrite the functionality of a module defined in the forge modules. this would just be a 'config' module that
-modifies an existing module. However if the module were to include a special keyword like internal(), onConnection(), onMessage(), etc, it would be expected that this module completely overwrites the default forge module.
-
+- [ ] optional dependencies in module system, allow for optional conditionally imported modules in the modules system. email providers is a good example. Only import the module if the user wants that modules provider to be used.
 
 # high
 - [ ] implement destamatic-forge acts system or spec. Do we define the stage acts array? Do we define the stage itself and manage it? Do we just define an act? What should the destamatic-forge acts define? I was thinking to keep them very independent of things, only rely on what core.jsx provides us through network sync and ignore all the other client side stuff the user creates. but in general idk. It's supposed to be a "one size fits all system" where they are just there for boilerplate but if you need to build custom frontend pages/acts, you don't have to use ours.
