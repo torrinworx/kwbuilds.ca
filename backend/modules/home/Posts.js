@@ -39,15 +39,15 @@ const normalizeNonNegativeInt = (value, fallback) => {
 	return fallback;
 };
 
-export default ({ webCore }) => {
-	const limitDefault = normalizePositiveInt(webCore.config.limit, defaults.limit);
-	const limitCap = Math.max(limitDefault, normalizePositiveInt(webCore.config.maxLimit, defaults.maxLimit));
-	const cacheTtl = normalizePositiveInt(webCore.config.cacheTtl, defaults.cacheTtl);
-	const cacheSize = Math.max(1, normalizePositiveInt(webCore.config.cacheSize, defaults.cacheSize));
-	const sortField = typeof webCore.config.sortField === 'string' && webCore.config.sortField.trim()
-		? webCore.config.sortField.trim()
+export default ({ config }) => {
+	const limitDefault = normalizePositiveInt(config.limit, defaults.limit);
+	const limitCap = Math.max(limitDefault, normalizePositiveInt(config.maxLimit, defaults.maxLimit));
+	const cacheTtl = normalizePositiveInt(config.cacheTtl, defaults.cacheTtl);
+	const cacheSize = Math.max(1, normalizePositiveInt(config.cacheSize, defaults.cacheSize));
+	const sortField = typeof config.sortField === 'string' && config.sortField.trim()
+		? config.sortField.trim()
 		: defaults.sortField;
-	const sortDir = webCore.config.sortDir === 1 ? 1 : defaults.sortDir;
+	const sortDir = config.sortDir === 1 ? 1 : defaults.sortDir;
 
 	const cache = new Map();
 
