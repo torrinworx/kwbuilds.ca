@@ -1,17 +1,8 @@
-export const config = {
-	fields: {
-		name: false,
-		description: {
-			maxLength: 5000,
-		},
-	},
-};
-
 const minRadius = 100;
 const maxRadius = 3000;
 
 export const extensions = {
-	postProps: ({ props }) => {
+	postUpdate: ({ props }) => {
 		const location = props?.location;
 		if (location == null) return null;
 		if (!location || typeof location !== 'object') {

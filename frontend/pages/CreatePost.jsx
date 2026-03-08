@@ -148,6 +148,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 			tags,
 			images: imageIds,
 			image: imageIds[0] ?? null,
+			location: mapSelection.get(),
 		});
 
 		if (response.error) {
@@ -227,34 +228,6 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	};
 
 	return <ValidateContext value={allValid}>
-		<div theme='column_fill' style={{ gap: 20, marginBottom: 60 }}>
-			<Typography type='h2' label='Map Stub' />
-			<Map
-				center={mapCenter}
-				zoom={mapZoom}
-				layers={mapLayers}
-				controls={mapControls}
-				style={{ height: 360 }}
-			/>
-			<MapInput
-				value={mapSelection}
-				minRadius={100}
-				maxRadius={3000}
-				radiusStep={50}
-				mapHeight={360}
-				mapProps={{ zoom: mapZoom }}
-			/>
-			<Typography
-				type='p2'
-				label={mapSelection.map(v => {
-					const lat = Number.isFinite(v?.lat) ? v.lat.toFixed(4) : '--';
-					const lng = Number.isFinite(v?.lng) ? v.lng.toFixed(4) : '--';
-					const radius = Number.isFinite(v?.radius) ? Math.round(v.radius) : '--';
-					const mode = v?.mode || '--';
-					return `Selected: ${lat}, ${lng} | radius ${radius}m | mode ${mode}`;
-				})}
-			/>
-		</div>
 		<div theme='content_col' >
 			<div theme='column_fill_center' style={{ textAlign: 'center', marginBottom: 60 }}>
 				<Typography type='h1' label='Post about your project!' />
@@ -294,7 +267,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				<Typography type='p1' label="Give your post a name! Everyone will see this, no pressure... 😉" />
 			</div>
 
-			<div theme='column_fill' style={{ gap: 10 }} >
+			<div theme='column_fill' >
 				<Typography type='h2' label='Description' />
 				<div theme='divider' />
 				<Typography type='p1' label='Give your post a nice and detailed description, markdown is supported.' />
@@ -358,7 +331,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-			<div theme='column_fill' style={{ gap: 10 }} >
+			<div theme='column_fill'>
 				<div theme='row_center_fill_spread_wrap'>
 					<Typography type='h2' label='Images' />
 				</div>
@@ -406,7 +379,7 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-			<div theme='column_fill' style={{ gap: 10 }}>
+			<div theme='column_fill'>
 				<div theme='row_center_fill_spread_wrap'>
 					<Typography type='h2' label='Tags' />
 					<div theme='column_tight' style={{ marginTop: 25 }}>
@@ -480,6 +453,35 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 						</div>
 					</Shown>
 				</div>
+			</div>
+
+			<div theme='content_col'>
+				<div theme='row_center_fill_spread_wrap'>
+					<Typography type='h2' label='Location' />
+				</div>
+				<div theme='divider' />
+				<Typography type='p1' label="Let us know where abouts your building! KWBuilds is a local first community, we want to match people to nearby hackers and crafters. Please specify your approximate location." />
+			<MapInput
+				value={mapSelection}
+				point={false}
+				radius
+				current={false}
+				search={false}
+				minRadius={100}
+				maxRadius={3000}
+				radiusStep={50}
+				mapHeight={360}
+				mapProps={{ zoom: mapZoom }}
+			/>
+			<Typography
+				type='p2'
+				label={mapSelection.map(v => {
+					const lat = Number.isFinite(v?.lat) ? v.lat.toFixed(4) : '--';
+					const lng = Number.isFinite(v?.lng) ? v.lng.toFixed(4) : '--';
+					const radius = Number.isFinite(v?.radius) ? Math.round(v.radius) : '--';
+					return `Selected: ${lat}, ${lng} | radius ${radius}m`;
+				})}
+			/>
 			</div>
 
 			<div theme='column_fill_center'>
