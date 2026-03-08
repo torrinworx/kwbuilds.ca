@@ -455,33 +455,31 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 				</div>
 			</div>
 
-			<div theme='content_col'>
-				<div theme='row_center_fill_spread_wrap'>
-					<Typography type='h2' label='Location' />
-				</div>
+			<div theme='column_fill'>
+				<Typography type='h2' label='Location' />
 				<div theme='divider' />
 				<Typography type='p1' label="Let us know where abouts your building! KWBuilds is a local first community, we want to match people to nearby hackers and crafters. Please specify your approximate location." />
-			<MapInput
-				value={mapSelection}
-				point={false}
-				radius
-				current={false}
-				search={false}
-				minRadius={100}
-				maxRadius={3000}
-				radiusStep={50}
-				mapHeight={360}
-				mapProps={{ zoom: mapZoom }}
-			/>
-			<Typography
-				type='p2'
-				label={mapSelection.map(v => {
-					const lat = Number.isFinite(v?.lat) ? v.lat.toFixed(4) : '--';
-					const lng = Number.isFinite(v?.lng) ? v.lng.toFixed(4) : '--';
-					const radius = Number.isFinite(v?.radius) ? Math.round(v.radius) : '--';
-					return `Selected: ${lat}, ${lng} | radius ${radius}m`;
-				})}
-			/>
+				<MapInput
+					value={mapSelection}
+					point={false}
+					radius
+					current={false}
+					search={false}
+					minRadius={100}
+					maxRadius={3000}
+					radiusStep={50}
+					mapHeight={360}
+					mapProps={{ zoom: mapZoom }}
+				/>
+				<Typography
+					type='p2'
+					label={mapSelection.map(v => {
+						const lat = Number.isFinite(v?.lat) ? v.lat.toFixed(4) : '--';
+						const lng = Number.isFinite(v?.lng) ? v.lng.toFixed(4) : '--';
+						const radius = Number.isFinite(v?.radius) ? Math.round(v.radius) : '--';
+						return `Selected: ${lat}, ${lng} | radius ${radius}m`;
+					})}
+				/>
 			</div>
 
 			<div theme='column_fill_center'>
