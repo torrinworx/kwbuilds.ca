@@ -15,6 +15,7 @@
 - [ ] "one module with providers" abstraction. Something that allows you to declare a single email/Create module, but then have email/nodemailer email/resend email/gmail. Or something like server/Serve but then it depends on server/Express server/http, etc. It should be able to swap out dependencies by having the parent provider module only import the one specified, the other providers are never imported by the module system if they are not specified in the configs.
 - [ ] migrate away from webcore.config to just config in modules parameters. Eventually remove all 'webcore' references since we have rebranded the repo to forge.
 - Allow users to edit posts
+- [ ] update map input pin icon so that it appears on all browsers and all devices, (mobile android firefox the pin is an empty square with alt text).
 
 # Low
 - [ ] Abstract scheduler delete and cleanup logic, deleteAt, so that it can scan all items in a db for deleteAt, then remove them, plus run a cleanup function. Say for deleting files on the s3 bucket, cleanup() would handle that. General 
