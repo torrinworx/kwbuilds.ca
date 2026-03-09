@@ -257,6 +257,8 @@ html {
 	text-size-adjust: none;
 }
 body {
+  margin: 0px;
+  inset: 0px;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
