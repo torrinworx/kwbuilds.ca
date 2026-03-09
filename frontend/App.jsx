@@ -13,7 +13,6 @@ import {
 	Script,
 	is_node,
 	OObject,
-	Observer,
 } from '@destamatic/ui';
 import IconifyIcons from "@destamatic/ui/components/icons/IconifyIcons/IconifyIcons";
 import { syncState, Stasis } from '@destamatic/forge/client';
@@ -40,11 +39,7 @@ if (!is_node()) {
 	appContext = await syncState();
 	appContext.theme = theme;
 } else {
-	appContext = OObject({
-		authed: Observer.immutable(false),
-		sync: null,
-		modReq: async () => [],
-	});
+	appContext = OObject({});
 }
 
 themeSetup(appContext);
