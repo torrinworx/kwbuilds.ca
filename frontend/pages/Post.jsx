@@ -1,5 +1,4 @@
 import { StageContext, suspend, Typography, Button, Icon, Shown, Observer } from '@destamatic/ui';
-import L from 'leaflet';
 
 import { modReq, Stasis, Map } from '@destamatic/forge/client';
 
@@ -82,16 +81,6 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 	const locationCenter = hasLocation ? { lat: location.lat, lng: location.lng } : { lat: 0, lng: 0 };
 	const locationRadius = hasLocation ? Math.round(location.radius) : 0;
 	const locationZoom = locationRadius > 2500 ? 11 : locationRadius > 1500 ? 12 : 13;
-	const locationLayers = hasLocation ? [
-		(map) => L.circle([location.lat, location.lng], {
-			radius: locationRadius,
-			color: '#1b6b6f',
-			weight: 2,
-			fillColor: '#1b6b6f',
-			fillOpacity: 0.2,
-		}).addTo(map),
-		(map) => L.marker([location.lat, location.lng]).addTo(map),
-	] : [];
 
 	return <div theme='content_col' style={{ gap: 20 }}>
 		<Paper theme='column_fill' style={{ gap: 20, overflow: 'clip' }}>
@@ -142,16 +131,28 @@ const Post = AppContext.use(app => StageContext.use(stage => suspend(Stasis, asy
 			<div theme='content_col' style={{ gap: 12 }}>
 				<Typography type='h2' label='Location' />
 				<div style={{ width: '100%', height: 360 }}>
-					<Map
-						center={locationCenter}
-						zoom={locationZoom}
-						layers={locationLayers}
-						showZoom={false}
-						syncCenterFromMap={false}
-						onReady={(map) => {
-							map.dragging.disable();
-							map.scrollWheelZoom.disable();
-							map.doubleClickZoom.disable();
+				<Map
+					center={locationCenter}
+					zoom={locationZoom}
+					showZoom={false}
+					syncCenterFromMap={false}
+					onReady={(map) => {
+						if (hasLocation && typeof window !== 'undefined') {
+							import('leaflet').then((module) => {
+								const leaflet = module.default ?? module;
+								leaflet.circle([location.lat, location.lng], {
+									radius: locationRadius,
+									color: '#1b6b6f',
+									weight: 2,
+									fillColor: '#1b6b6f',
+									fillOpacity: 0.2,
+								}).addTo(map);
+								leaflet.marker([location.lat, location.lng]).addTo(map);
+							});
+						}
+						map.dragging.disable();
+						map.scrollWheelZoom.disable();
+						map.doubleClickZoom.disable();
 							map.boxZoom.disable();
 							map.keyboard.disable();
 							map.touchZoom.disable();

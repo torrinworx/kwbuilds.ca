@@ -13,8 +13,7 @@ import {
 	FileDrop,
 	ThemeContext,
 } from "@destamatic/ui";
-import L from 'leaflet';
-import { modReq, ActionField, Map, MapInput } from '@destamatic/forge/client';
+import { modReq, ActionField, MapInput } from '@destamatic/forge/client';
 
 import Paper from '../components/Paper.jsx';
 import Markdown from '../components/Markdown.jsx';
@@ -36,17 +35,8 @@ const CreatePost = ThemeContext.use(h => StageContext.use(stage => (_, cleanup) 
 	const allValid = Observer.mutable(true);
 	const error = Observer.mutable('');
 	const descriptionMode = Observer.mutable('edit');
-	const mapCenter = Observer.mutable({ lat: 43.4643, lng: -80.5204 });
 	const mapZoom = Observer.mutable(13);
 	const mapSelection = Observer.mutable({ lat: 43.4643, lng: -80.5204, radius: 800, mode: 'radius' });
-	const mapLayers = Observer.mutable([
-		(map) => L.marker([43.4643, -80.5204]).addTo(map),
-		(map) => L.marker([43.4722, -80.5449]).addTo(map),
-		(map) => L.marker([43.4516, -80.4925]).addTo(map),
-	]);
-	const mapControls = Observer.mutable([
-		(map) => L.control.scale().addTo(map),
-	]);
 
 	const Tag = ({ each: tag }) => {
 		const index = tags.indexOf(tag);

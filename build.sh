@@ -10,10 +10,10 @@ rm -f "$ZIP_FILE"
 
 # Frontend builds
 npm run build:web
-# vite build --config vite.config.ssg.js
+vite build --config vite.config.ssg.js
 
 # SSG step
-# node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://kwbuilds.ca
+node ./destamatic-ui/ssg/build.js "$BUILD_DIR" ./frontend https://kwbuilds.ca
 
 # Server
 cp -R ./backend "$BUILD_DIR/backend"
